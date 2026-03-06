@@ -145,6 +145,31 @@ def save_one_status(key: str, status: str) -> None:
         pass
 
 
+def load_links() -> dict:
+    """Load obligation links from Supabase. Falls back to {} on any error."""
+    client = get_supabase()
+    if client is None:
+        return {}
+    try:
+        response = client.table("obligation_statuses").select("key, link").execute()
+        return {row["key"]: row.get("link", "") or "" for row in (response.data or [])}
+    except Exception:
+        return {}
+
+
+def save_one_link(key: str, link: str) -> None:
+    """Upsert a single obligation link to Supabase. Silent on error."""
+    client = get_supabase()
+    if client is None:
+        return
+    try:
+        client.table("obligation_statuses").upsert(
+            {"key": key, "link": link}
+        ).execute()
+    except Exception:
+        pass
+
+
 def get_base64_image(filename):
     try:
         with open(DATA_DIR / filename, "rb") as f:
@@ -874,8 +899,9 @@ if not contracts:
 # Session state
 # ══════════════════════════════════════════════════════════════════════════════
 if "obligation_statuses" not in st.session_state:
-    # Restore from disk so reloads don't lose user changes
     st.session_state.obligation_statuses = load_statuses()
+if "obligation_links" not in st.session_state:
+    st.session_state.obligation_links = load_links()
 if "solarview_token" not in st.session_state:
     st.session_state.solarview_token = None
 
@@ -1430,11 +1456,21 @@ elif page == "Obligaciones":
                     with c_file:
                         st.markdown('<div class="ob-file-label">Link de soporte</div>',
                                     unsafe_allow_html=True)
+                        lk = f"link_{sk}"
+                        if lk not in st.session_state:
+                            st.session_state[lk] = st.session_state.obligation_links.get(sk, "")
+
+                        def _on_link_change(_sk=sk, _lk=lk):
+                            new_val = st.session_state[_lk]
+                            st.session_state.obligation_links[_sk] = new_val
+                            save_one_link(_sk, new_val)
+
                         st.text_input(
                             "Link",
                             placeholder="https://...",
-                            key=f"link_{sk}",
+                            key=lk,
                             label_visibility="collapsed",
+                            on_change=_on_link_change,
                         )
 
                     with c_status:
