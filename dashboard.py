@@ -1540,87 +1540,19 @@ elif page == "Obligaciones":
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# PAGE 3 — Financiero (DYNAMIC per bank tab)
+# PAGE 3 — Financiero
 # ══════════════════════════════════════════════════════════════════════════════
 elif page == "Financiero":
 
     st.markdown("""
     <div class="page-heading">Análisis Financiero</div>
-    <div class="page-subheading">Covenants, comisiones, garantías y condiciones de distribución por banco.</div>
-    """, unsafe_allow_html=True)
-
-    bank_names = [b["name"] for b in banks]
-    fin_tabs = st.tabs(bank_names)
-
-    for bank_idx, tab in enumerate(fin_tabs):
-        with tab:
-            c = contracts[bank_idx]
-            fin = c.get("condiciones_financieras", {})
-            plazos = c.get("plazos_y_pagos", {})
-            garantias_data = c.get("garantias", {})
-            criticas_data = c.get("clausulas_criticas", {})
-
-            # ── Covenants ────────────────────────────────────────────────
-            st.markdown('<div class="section-title">Covenants Financieros</div>', unsafe_allow_html=True)
-            cov = fin.get("covenants_financieros", {})
-            if cov:
-                dscr_hist = cov.get("DSCR_historico_minimo", cov.get("DSCR_minimo", "N/A"))
-                dscr_proj = cov.get("DSCR_proyectado_minimo", dscr_hist)
-                dscr_dist = cov.get("DSCR_para_distribucion", dscr_hist)
-
-                cv1, cv2, cv3 = st.columns(3)
-                with cv1:
-                    st.markdown(f'<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:1.2rem;text-align:center;"><div style="font-size:0.65rem;color:#374151;text-transform:uppercase;font-weight:700;">DSCR Mínimo</div><div style="font-family:Poppins,sans-serif;font-size:2.2rem;font-weight:800;color:#16a34a;margin:0.2rem 0;">{dscr_hist}x</div></div>', unsafe_allow_html=True)
-                with cv2:
-                    st.markdown(f'<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:1.2rem;text-align:center;"><div style="font-size:0.65rem;color:#374151;text-transform:uppercase;font-weight:700;">DSCR Proyectado</div><div style="font-family:Poppins,sans-serif;font-size:2.2rem;font-weight:800;color:#16a34a;margin:0.2rem 0;">{dscr_proj}x</div></div>', unsafe_allow_html=True)
-                with cv3:
-                    st.markdown(f'<div style="background:var(--u-purple-10);border:1px solid var(--u-purple-25);border-radius:14px;padding:1.2rem;text-align:center;"><div style="font-size:0.65rem;color:#374151;text-transform:uppercase;font-weight:700;">DSCR Distribución</div><div style="font-family:Poppins,sans-serif;font-size:2.2rem;font-weight:800;color:var(--u-purple);margin:0.2rem 0;">{dscr_dist}x</div></div>', unsafe_allow_html=True)
-
-                base = cov.get("base_calculo", "NIIF/IFRS")
-                anio = cov.get("año_fiscal_prestatario", "Dic 31")
-                st.markdown(f'<div style="background:var(--u-cream);border:1px solid var(--u-purple-10);border-radius:10px;padding:0.65rem 1rem;margin-top:0.7rem;font-size:0.72rem;color:#374151;"><strong>Base:</strong> {base}. <strong>Año fiscal:</strong> {anio}.</div>', unsafe_allow_html=True)
-            else:
-                st.info("No se encontraron covenants financieros en este contrato.")
-
-            # ── Distribution + Prepayment ────────────────────────────────
-            st.markdown('<div class="section-title">Distribución y Prepagos</div>', unsafe_allow_html=True)
-            cd_col, cp_col = st.columns(2)
-
-            with cd_col:
-                dist = criticas_data.get("distribucion_permitida", {})
-                conditions = dist.get("condiciones", [])
-                if conditions:
-                    ch = "".join(f'<div style="display:flex;align-items:flex-start;gap:0.4rem;margin-bottom:0.35rem;"><span style="color:var(--u-purple);font-size:0.8rem;flex-shrink:0;">✓</span><span style="font-size:0.73rem;color:#374151;line-height:1.45;">{cond}</span></div>' for cond in conditions)
-                    st.markdown(f'<div style="background:#fff;border:1px solid var(--u-purple-15);border-radius:14px;padding:1.2rem;box-shadow:0 1px 3px rgba(44,32,57,0.04);height:100%;"><div style="font-family:Poppins,sans-serif;font-size:0.82rem;font-weight:700;color:var(--u-deep);margin-bottom:0.7rem;">Condiciones para Distribución</div>{ch}</div>', unsafe_allow_html=True)
-                else:
-                    st.info("Condiciones de distribución no disponibles.")
-
-            with cp_col:
-                prepago = criticas_data.get("prepago", {})
-                if prepago:
-                    p1 = prepago.get("penalidad_antes_4_anos", prepago.get("comision_prepago", "N/A"))
-                    p2 = prepago.get("penalidad_4_a_8_anos", "N/A")
-                    p3 = prepago.get("penalidad_despues_8_anos", "Sin penalidad")
-                    st.markdown(f"""<div style="background:#fff;border:1px solid var(--u-purple-15);border-radius:14px;padding:1.2rem;box-shadow:0 1px 3px rgba(44,32,57,0.04);height:100%;">
-                    <div style="font-family:Poppins,sans-serif;font-size:0.82rem;font-weight:700;color:var(--u-deep);margin-bottom:0.7rem;">Penalización por Pago Anticipado</div>
-                    <table class="prepay-table"><tr><th>Período</th><th>Penalización</th></tr>
-                    <tr><td>Período 1</td><td class="highlight">{p1}</td></tr>
-                    <tr><td>Período 2</td><td style="color:#f59e0b;font-weight:700;">{p2}</td></tr>
-                    <tr><td>Período 3</td><td class="ok">{p3}</td></tr></table></div>""", unsafe_allow_html=True)
-                else:
-                    st.info("Información de prepago no disponible.")
-
-
-    # ── Portafolio section (merged) ───────────────────────────────────────────
-    st.markdown('<hr style="border:none;border-top:1px solid var(--u-purple-15);margin:2rem 0;">', unsafe_allow_html=True)
-    st.markdown("""
-    <div class="page-heading" style="margin-top:0;">Portafolio de Inversión</div>
-    <div class="page-subheading">Métricas consolidadas del portafolio solar y análisis de rendimiento. (Datos simulados)</div>
+    <div class="page-subheading">Portafolio, rendimiento, covenants y condiciones de distribución por banco.</div>
     """, unsafe_allow_html=True)
 
     mock = generate_portfolio_mock()
 
-    # ── KPI Row ──────────────────────────────────────────────────────────
+    # ── 1. Portafolio de Inversión ────────────────────────────────────────
+    st.markdown('<div class="section-title">Portafolio de Inversión</div>', unsafe_allow_html=True)
     pk1, pk2, pk3, pk4 = st.columns(4)
     with pk1:
         st.markdown(f'<div class="metric-card"><div class="label">Valor Portafolio</div><div class="value">COP {mock["valor_portafolio"]/1e9:.1f}B</div><div class="sub">Total bajo gestión</div></div>', unsafe_allow_html=True)
@@ -1631,32 +1563,8 @@ elif page == "Financiero":
     with pk4:
         st.markdown(f'<div class="metric-card"><div class="label">CO₂ Evitado</div><div class="value">{mock["co2_evitado_ton"]:,.0f}</div><div class="sub">Toneladas / año</div></div>', unsafe_allow_html=True)
 
-    # ── DSCR History Chart ───────────────────────────────────────────────
-    st.markdown('<div class="section-title">Histórico DSCR</div>', unsafe_allow_html=True)
-
-    if HAS_PLOTLY:
-        months_lbl = list(MONTH_SHORT.values())
-        fig_dscr = go.Figure()
-        fig_dscr.add_trace(go.Scatter(
-            x=months_lbl, y=mock["historico_dscr"], name="DSCR Real",
-            line=dict(color=PURPLE, width=3), mode="lines+markers",
-            marker=dict(size=8, color=PURPLE, line=dict(width=2, color="#fff")),
-            fill="tozeroy", fillcolor="rgba(145,91,216,0.08)",
-        ))
-        fig_dscr.add_hline(y=1.2, line_dash="dash", line_color="#ef4444",
-                           annotation_text="Mínimo: 1.20x", annotation_position="top left")
-        fig_dscr.update_layout(
-            plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Lato, sans-serif", size=12, color=DEEP_PURPLE),
-            margin=dict(l=50, r=20, t=20, b=40), height=300,
-            yaxis=dict(gridcolor="rgba(145,91,216,0.07)", zeroline=False, range=[0.9, 1.7]),
-            xaxis=dict(showgrid=False),
-        )
-        st.plotly_chart(fig_dscr, width="stretch", config={"displayModeBar": False})
-
-    # ── Financial Performance ────────────────────────────────────────────
+    # ── 2. Rendimiento Financiero ─────────────────────────────────────────
     st.markdown('<div class="section-title">Rendimiento Financiero</div>', unsafe_allow_html=True)
-
     pf1, pf2, pf3, pf4 = st.columns(4)
     with pf1:
         st.markdown(f'<div class="metric-card"><div class="label">TIR Real</div><div class="value">{mock["tir_real"]}%</div><div class="sub">Tasa interna retorno</div></div>', unsafe_allow_html=True)
@@ -1667,12 +1575,10 @@ elif page == "Financiero":
     with pf4:
         st.markdown(f'<div class="metric-card"><div class="label">Margen EBITDA</div><div class="value">{mock["margen_ebitda"]}%</div><div class="sub">Eficiencia operativa</div></div>', unsafe_allow_html=True)
 
-    # ── Cash Flow Consolidado ────────────────────────────────────────────
+    # ── 3. Flujo de Caja Consolidado ──────────────────────────────────────
     st.markdown('<div class="section-title">Flujo de Caja Consolidado</div>', unsafe_allow_html=True)
-
     total_mw = sum(b.get("proyecto", {}).get("capacidad_agregada_mw", 6) for b in banks)
     mo_labels, ingresos, opex, ds, fcl = generate_cashflow_mock(total_mw)
-
     if HAS_PLOTLY:
         fig_cf = go.Figure()
         fig_cf.add_trace(go.Bar(x=mo_labels, y=[v/1e6 for v in ingresos], name="Ingresos PPA", marker_color=PURPLE))
@@ -1689,7 +1595,84 @@ elif page == "Financiero":
         )
         st.plotly_chart(fig_cf, width="stretch", config={"displayModeBar": False})
 
-    # ── Risk Score ───────────────────────────────────────────────────────
+    # ── 4-6. Por banco: Covenants · Histórico DSCR · Distribución ────────
+    st.markdown('<hr style="border:none;border-top:1px solid var(--u-purple-15);margin:2rem 0;">', unsafe_allow_html=True)
+    bank_names = [b["name"] for b in banks]
+    fin_tabs = st.tabs(bank_names)
+
+    for bank_idx, tab in enumerate(fin_tabs):
+        with tab:
+            c = contracts[bank_idx]
+            fin = c.get("condiciones_financieras", {})
+            criticas_data = c.get("clausulas_criticas", {})
+
+            # ── 4. Covenants Financieros ──────────────────────────────────
+            st.markdown('<div class="section-title">Covenants Financieros</div>', unsafe_allow_html=True)
+            cov = fin.get("covenants_financieros", {})
+            if cov:
+                dscr_hist = cov.get("DSCR_historico_minimo", cov.get("DSCR_minimo", "N/A"))
+                dscr_proj = cov.get("DSCR_proyectado_minimo", dscr_hist)
+                dscr_dist = cov.get("DSCR_para_distribucion", dscr_hist)
+                cv1, cv2, cv3 = st.columns(3)
+                with cv1:
+                    st.markdown(f'<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:1.2rem;text-align:center;"><div style="font-size:0.65rem;color:#374151;text-transform:uppercase;font-weight:700;">DSCR Mínimo</div><div style="font-family:Poppins,sans-serif;font-size:2.2rem;font-weight:800;color:#16a34a;margin:0.2rem 0;">{dscr_hist}x</div></div>', unsafe_allow_html=True)
+                with cv2:
+                    st.markdown(f'<div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:1.2rem;text-align:center;"><div style="font-size:0.65rem;color:#374151;text-transform:uppercase;font-weight:700;">DSCR Proyectado</div><div style="font-family:Poppins,sans-serif;font-size:2.2rem;font-weight:800;color:#16a34a;margin:0.2rem 0;">{dscr_proj}x</div></div>', unsafe_allow_html=True)
+                with cv3:
+                    st.markdown(f'<div style="background:var(--u-purple-10);border:1px solid var(--u-purple-25);border-radius:14px;padding:1.2rem;text-align:center;"><div style="font-size:0.65rem;color:#374151;text-transform:uppercase;font-weight:700;">DSCR Distribución</div><div style="font-family:Poppins,sans-serif;font-size:2.2rem;font-weight:800;color:var(--u-purple);margin:0.2rem 0;">{dscr_dist}x</div></div>', unsafe_allow_html=True)
+                base = cov.get("base_calculo", "NIIF/IFRS")
+                anio = cov.get("año_fiscal_prestatario", "Dic 31")
+                st.markdown(f'<div style="background:var(--u-cream);border:1px solid var(--u-purple-10);border-radius:10px;padding:0.65rem 1rem;margin-top:0.7rem;font-size:0.72rem;color:#374151;"><strong>Base:</strong> {base}. <strong>Año fiscal:</strong> {anio}.</div>', unsafe_allow_html=True)
+            else:
+                st.info("No se encontraron covenants financieros en este contrato.")
+
+            # ── 5. Histórico DSCR ─────────────────────────────────────────
+            st.markdown('<div class="section-title">Histórico DSCR</div>', unsafe_allow_html=True)
+            if HAS_PLOTLY:
+                months_lbl = list(MONTH_SHORT.values())
+                fig_dscr = go.Figure()
+                fig_dscr.add_trace(go.Scatter(
+                    x=months_lbl, y=mock["historico_dscr"], name="DSCR Real",
+                    line=dict(color=PURPLE, width=3), mode="lines+markers",
+                    marker=dict(size=8, color=PURPLE, line=dict(width=2, color="#fff")),
+                    fill="tozeroy", fillcolor="rgba(145,91,216,0.08)",
+                ))
+                fig_dscr.add_hline(y=1.2, line_dash="dash", line_color="#ef4444",
+                                   annotation_text="Mínimo: 1.20x", annotation_position="top left")
+                fig_dscr.update_layout(
+                    plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+                    font=dict(family="Lato, sans-serif", size=12, color=DEEP_PURPLE),
+                    margin=dict(l=50, r=20, t=20, b=40), height=300,
+                    yaxis=dict(gridcolor="rgba(145,91,216,0.07)", zeroline=False, range=[0.9, 1.7]),
+                    xaxis=dict(showgrid=False),
+                )
+                st.plotly_chart(fig_dscr, use_container_width=True, config={"displayModeBar": False})
+
+            # ── 6. Distribución y Prepagos ────────────────────────────────
+            st.markdown('<div class="section-title">Distribución y Prepagos</div>', unsafe_allow_html=True)
+            cd_col, cp_col = st.columns(2)
+            with cd_col:
+                dist = criticas_data.get("distribucion_permitida", {})
+                conditions = dist.get("condiciones", [])
+                if conditions:
+                    ch = "".join(f'<div style="display:flex;align-items:flex-start;gap:0.4rem;margin-bottom:0.35rem;"><span style="color:var(--u-purple);font-size:0.8rem;flex-shrink:0;">✓</span><span style="font-size:0.73rem;color:#374151;line-height:1.45;">{cond}</span></div>' for cond in conditions)
+                    st.markdown(f'<div style="background:#fff;border:1px solid var(--u-purple-15);border-radius:14px;padding:1.2rem;box-shadow:0 1px 3px rgba(44,32,57,0.04);"><div style="font-family:Poppins,sans-serif;font-size:0.82rem;font-weight:700;color:var(--u-deep);margin-bottom:0.7rem;">Condiciones para Distribución</div>{ch}</div>', unsafe_allow_html=True)
+                else:
+                    st.info("Condiciones de distribución no disponibles.")
+            with cp_col:
+                prepago = criticas_data.get("prepago", {})
+                if prepago:
+                    p1 = prepago.get("penalidad_antes_4_anos", prepago.get("comision_prepago", "N/A"))
+                    p2 = prepago.get("penalidad_4_a_8_anos", "N/A")
+                    p3 = prepago.get("penalidad_despues_8_anos", "Sin penalidad")
+                    st.markdown(f"""<div style="background:#fff;border:1px solid var(--u-purple-15);border-radius:14px;padding:1.2rem;box-shadow:0 1px 3px rgba(44,32,57,0.04);">
+                    <div style="font-family:Poppins,sans-serif;font-size:0.82rem;font-weight:700;color:var(--u-deep);margin-bottom:0.7rem;">Penalización por Pago Anticipado</div>
+                    <table class="prepay-table"><tr><th>Período</th><th>Penalización</th></tr>
+                    <tr><td>Período 1</td><td class="highlight">{p1}</td></tr>
+                    <tr><td>Período 2</td><td style="color:#f59e0b;font-weight:700;">{p2}</td></tr>
+                    <tr><td>Período 3</td><td class="ok">{p3}</td></tr></table></div>""", unsafe_allow_html=True)
+                else:
+                    st.info("Información de prepago no disponible.")
 
 
 # ══════════════════════════════════════════════════════════════════════════════
