@@ -1,0 +1,677 @@
+{
+  "informacion_del_contrato": {
+    "tipo_de_contrato": "Contrato de Servicios Financieros de Crédito (Credit Financial Services Agreement)",
+    "nombre_del_proyecto": "Proyecto Serranía de Perijá",
+    "numero_de_referencia": "Borrador - febrero 18 de 2026",
+    "fecha_de_ejecucion": "[•] de [•] de 2026 (fecha por definir en versión final)"
+  },
+  "partes_involucradas": {
+    "prestamista": {
+      "nombre": "Banco Davivienda S.A. (NIT: 860.034.313-7)",
+      "tipo": "Banco Comercial Colombiano",
+      "domicilio": "Calle 28 No. 13A-15, piso 33, Bogotá, Colombia",
+      "rol": "Prestamista / Acreedor Garantizado"
+    },
+    "prestatario": {
+      "nombre": "Patrimonio Autónomo Serranía de Perijá",
+      "tipo": "Patrimonio Autónomo (Trust) bajo ley colombiana",
+      "fiduciario": "Fiduciaria Davivienda S.A. (NIT: 800.182.281-5)",
+      "fideicomitentes": ["Solenium S.A.S.", "FAP Nueva Frontera (Credicorp Capital Fiduciaria)", "Unergy Energía Digital S.A.S. E.S.P."],
+      "fecha_contrato_fiducia": "Por definir en versión final"
+    },
+    "patrocinadores_sponsors": [
+      {
+        "nombre": "Ayurá S.A.S.",
+        "tipo": "Sociedad por Acciones Simplificada",
+        "domicilio": "A través de FAP Nueva Frontera / Credicorp Capital Fiduciaria",
+        "rol": "Sponsor"
+      },
+      {
+        "nombre": "Solenium S.A.S.",
+        "tipo": "Sociedad por Acciones Simplificada",
+        "domicilio": "Colombia",
+        "rol": "Sponsor"
+      }
+    ],
+    "desarrollador": {
+      "nombre": "Unergy Energía Digital S.A.S. E.S.P.",
+      "tipo": "Sociedad por Acciones Simplificada / Empresa de Servicios Públicos",
+      "domicilio": "Medellín, Colombia",
+      "rol": "Desarrollador del Proyecto"
+    },
+    "asesores": {
+      "asesor_ambiental_social": "No especificado en borrador",
+      "asesor_seguros": "No especificado en borrador",
+      "asesor_tecnico": "Ingeniero Independiente (por designar)",
+      "asesor_legal_local": "No especificado en borrador"
+    }
+  },
+  "condiciones_financieras": {
+    "monto_total_del_credito": {
+      "valor": "COP $18,059,000,000 (aproximadamente USD 4,200,000)",
+      "moneda_base": "COP (pesos colombianos)",
+      "moneda_de_desembolso": "COP (pesos colombianos) - crédito en moneda local",
+      "valor_numerico_cop": 18059000000,
+      "valor_aproximado_usd": 4200000
+    },
+    "estructura_de_tramos": {
+      "tramo_unico": {
+        "compromiso": "COP $18,059,000,000",
+        "valor_numerico_cop": 18059000000,
+        "estado": "Crédito senior, de largo plazo, no rotativo"
+      }
+    },
+    "tasa_de_interes_ordinaria": {
+      "tipo": "Variable",
+      "componentes": {
+        "tasa_de_referencia": "IBR (Indicador Bancario de Referencia) a 1 mes",
+        "tasa_de_referencia_alternativa": "No aplica - crédito exclusivamente en COP",
+        "margen": "[•] puntos básicos (spread por definir en versión final)",
+        "reduccion_de_margen": "No especificada en borrador"
+      },
+      "piso_tasa_referencia": "No especificado en borrador",
+      "determinacion": "Según convención IBR del Banco de la República",
+      "base_calculo": "Actual/360",
+      "margen_numerico": null
+    },
+    "tasa_de_interes_moratorio": "Tasa máxima permitida por la ley colombiana (tasa de usura)",
+    "CAT": "No especificado - contrato de financiamiento corporativo de proyecto",
+    "comisiones_y_cargos": {
+      "comision_de_estructuracion": {
+        "monto": "1.5% del monto total del compromiso + IVA",
+        "base_legal": "Contrato de Crédito",
+        "porcentaje": 1.5
+      },
+      "commitment_fee": {
+        "monto": "1.5% anual sobre el monto no desembolsado + IVA",
+        "base_legal": "Contrato de Crédito",
+        "porcentaje_anual": 1.5
+      },
+      "comision_de_prepago": {
+        "monto": "1.5% del monto prepagado + IVA (para prepagos voluntarios con fondos externos)",
+        "base_legal": "Contrato de Crédito",
+        "porcentaje": 1.5
+      },
+      "costos_de_transaccion": "Prestatario cubre costos legales, honorarios y gastos asociados",
+      "periodo_de_disponibilidad": "8 meses desde el primer desembolso"
+    },
+    "covenants_financieros": {
+      "DSCR_minimo": 1.2,
+      "DSCR_evento_default": 1.1,
+      "DSCR_para_distribucion": 1.2,
+      "base_calculo": "Desde la Fecha de Operación Comercial (COD), certificación RCSD requerida",
+      "cash_sweep": "100% del flujo de caja excedente como prepago obligatorio hasta que sponsors recuperen participación mayoritaria",
+      "reserva_servicio_deuda": "Mínimo 3 meses de servicio de deuda",
+      "estructura_capital": "30% equity (sponsors) / 70% deuda (Davivienda)"
+    }
+  },
+  "plazos_y_pagos": {
+    "fecha_de_firma": "[•] de [•] de 2026 (por definir)",
+    "fecha_de_vencimiento_terminacion": "10 años desde el primer desembolso",
+    "plazo_anos": 10,
+    "frecuencia_de_pago_intereses": "Mensual",
+    "calendario_de_amortizacion": "Mensual después del período de gracia, según Calendario de Amortización anexo",
+    "numero_total_de_pagos": "Definido en Calendario de Amortización",
+    "primer_pago_de_capital": "Al finalizar el período de gracia de 12 meses",
+    "periodo_de_gracia": "12 meses (10 meses construcción + 2 meses estabilización)",
+    "periodo_de_disponibilidad": "8 meses desde el primer desembolso"
+  },
+  "garantias": {
+    "prenda_derechos_fiduciarios": {
+      "descripcion": "Garantía Mobiliaria sobre Derechos Fiduciarios - prenda sobre los Derechos Fiduciarios del Prestatario en favor de Banco Davivienda",
+      "alcance": "Derechos fiduciarios derivados del Contrato de Fiducia del Patrimonio Autónomo Serranía de Perijá"
+    },
+    "pagares": {
+      "descripcion": "Dos pagarés requeridos como título ejecutivo bajo ley colombiana",
+      "tipos": ["Pagaré por capital e intereses", "Pagaré por comisiones y gastos"]
+    },
+    "polizas_de_seguros": {
+      "descripcion": "Pólizas de seguro designando al Prestatario como beneficiario",
+      "requisito": "Aseguradoras con calificación mínima AA-"
+    },
+    "contrato_de_fiducia": {
+      "descripcion": "Contrato de Fiducia como vehículo de garantía",
+      "alcance": "Todos los activos del proyecto canalizados a través del patrimonio autónomo"
+    },
+    "negative_pledge": "Prestatario no puede crear ni permitir gravámenes sin consentimiento previo de Davivienda",
+    "ranking_de_seguridad": "Primer rango de prioridad (first-priority) en favor del Prestamista sobre todas las garantías"
+  },
+  "clausulas_criticas": {
+    "prepago": {
+      "permitido": true,
+      "penalidad_prepago_voluntario": "1.5% del monto prepagado + IVA (para prepagos con fondos externos)",
+      "prepago_obligatorio": "100% cash sweep del flujo de caja excedente hasta recuperación de participación mayoritaria de sponsors"
+    },
+    "causales_de_terminacion_eventos_de_default": [
+      "Falta de pago (con cura de 5 días para retrasos operativos)",
+      "Incumplimiento de obligaciones de hacer (cura de 30 días para ciertos ítems)",
+      "Falsedad en representaciones y garantías (cura de 15 días)",
+      "Invalidez de documentos de transacción o garantía",
+      "Disolución o liquidación del Prestatario o partes",
+      "Procedimientos de insolvencia o reorganización",
+      "Expropiación o intervención gubernamental",
+      "Litigios o sentencias ≥ COP 1,000,000,000 (no pagados en 45 días)",
+      "Ilegalidad sobrevenida",
+      "Pagos prohibidos o no autorizados",
+      "Violaciones anticorrupción o antilavado de activos (AML)",
+      "Efecto Material Adverso (Material Adverse Effect)",
+      "DSCR < 1.1x"
+    ],
+    "cambio_de_control": "Requiere notificación con 20 días hábiles de anticipación. No permitido sin aprobación previa del Prestamista",
+    "jurisdiccion_y_ley_aplicable": {
+      "ley_aplicable": "Leyes de la República de Colombia",
+      "jurisdiccion": "Tribunales colombianos",
+      "idioma": "Español",
+      "titulo_ejecutivo": "Pagarés constituyen títulos ejecutivos bajo ley colombiana"
+    },
+    "distribucion_permitida": {
+      "condiciones": [
+        "Crédito senior al corriente, sin mora",
+        "Sin evento de incumplimiento (Default) pendiente o probable",
+        "Primera fecha de pago de intereses ya ocurrida",
+        "DSRA fondeada con al menos 3 meses de servicio de deuda",
+        "DSCR ≥ 1.20x",
+        "Cumplimiento de cash sweep"
+      ]
+    }
+  },
+  "descripcion_del_proyecto": {
+    "tipo": "Portafolio de 6 minigranjas solares fotovoltaicas en Cesar, Colombia",
+    "numero_de_proyectos": 6,
+    "capacidad_por_proyecto_mw": 0.99,
+    "capacidad_agregada_mw": 5.94,
+    "pais": "Colombia",
+    "departamento": "Cesar",
+    "plantas": [
+      {
+        "nombre": "Minigranja 0104 - Agustín Codazzi Sur 3",
+        "ubicacion": "Agustín Codazzi, Cesar",
+        "capacidad_mw": 0.99,
+        "estado": "Nueva"
+      },
+      {
+        "nombre": "Minigranja 0107 - La Jagua de Ibirico",
+        "ubicacion": "La Jagua de Ibirico, Cesar",
+        "capacidad_mw": 0.99,
+        "estado": "Nueva"
+      },
+      {
+        "nombre": "Guayacán (Manhattan 3)",
+        "ubicacion": "Agustín Codazzi, Cesar",
+        "capacidad_mw": 0.99,
+        "estado": "Nueva"
+      },
+      {
+        "nombre": "Caracolí (Manhattan 4)",
+        "ubicacion": "Agustín Codazzi, Cesar",
+        "capacidad_mw": 0.99,
+        "estado": "Nueva"
+      },
+      {
+        "nombre": "Cacica - Minigranja 0040",
+        "ubicacion": "Valledupar, Cesar",
+        "capacidad_mw": 0.99,
+        "estado": "Existente"
+      },
+      {
+        "nombre": "Molina, Las Piloneras - Minigranja 0041",
+        "ubicacion": "Valledupar, Cesar",
+        "capacidad_mw": 0.99,
+        "estado": "Existente"
+      }
+    ]
+  },
+  "responsabilidades": {
+    "obligaciones_de_pago": [
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de capital según Calendario de Amortización mensual después del período de gracia",
+        "clausula": "Contrato de Crédito - Amortización",
+        "frecuencia": "Mensual (después de los 12 meses de gracia)",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento inmediato. Davivienda puede declarar todos los montos vencidos y exigibles de inmediato, cancelar compromisos y ejecutar garantías incluyendo pagarés.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de intereses mensuales (IBR 1 mes + [•] bps, base Actual/360)",
+        "clausula": "Contrato de Crédito - Intereses",
+        "frecuencia": "Mensual",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento con cura de 5 días para retrasos operativos. Se activa interés moratorio a tasa máxima legal. Davivienda puede acelerar toda la deuda.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de Comisión de Estructuración (1.5% del compromiso total + IVA)",
+        "clausula": "Contrato de Crédito - Comisiones",
+        "frecuencia": "Al momento de la firma o primer desembolso",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento por falta de pago. Puede condicionar el primer desembolso del crédito.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de Commitment Fee (1.5% anual sobre montos no desembolsados + IVA)",
+        "clausula": "Contrato de Crédito - Comisiones",
+        "frecuencia": "Periódico durante el período de disponibilidad de 8 meses",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento por falta de pago. Puede afectar disponibilidad de futuros desembolsos.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de Comisión de Prepago (1.5% del monto prepagado + IVA) en caso de prepago voluntario con fondos externos",
+        "clausula": "Contrato de Crédito - Prepago",
+        "frecuencia": "Al momento de cada prepago voluntario",
+        "consecuencia_incumplimiento": "Davivienda puede rechazar el prepago o deducir la comisión de los fondos del patrimonio autónomo.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Cumplimiento del Cash Sweep: 100% del flujo de caja excedente como prepago obligatorio",
+        "clausula": "Contrato de Crédito - Cash Sweep",
+        "frecuencia": "En cada período de cálculo según cascada de pagos",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento. Bloqueo automático de distribuciones a sponsors. Davivienda puede ejecutar garantías.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de todos los impuestos, tasas y contribuciones asociados al crédito puntualmente",
+        "clausula": "Sección 5.01 - Obligaciones de Hacer",
+        "frecuencia": "Según calendario fiscal colombiano",
+        "consecuencia_incumplimiento": "Posible Evento de Incumplimiento. Riesgo de embargo fiscal sobre activos del proyecto que afecta garantías de Davivienda.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Sponsors",
+        "obligacion": "Pago de intereses durante la fase de construcción (Construction Interest)",
+        "clausula": "Sección 5.01 - Obligaciones de Hacer",
+        "frecuencia": "Mensual durante los 10 meses de construcción",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento por falta de pago. Puede activar aceleración de toda la deuda y ejecución de garantías.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Sponsors",
+        "obligacion": "Aporte completo de equity (30% del proyecto) antes del primer desembolso del crédito",
+        "clausula": "Sección 5.01 - Condición Precedente",
+        "frecuencia": "Antes del primer desembolso",
+        "consecuencia_incumplimiento": "Davivienda no realizará el primer desembolso. El crédito no se activa. Incumplimiento de condiciones precedentes.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de todos los honorarios, gastos y costos asociados a la transacción",
+        "clausula": "Sección 5.01 - Obligaciones de Hacer",
+        "frecuencia": "Según se incurran",
+        "consecuencia_incumplimiento": "Incumplimiento de obligación contractual. Puede constituir Evento de Incumplimiento si no se remedia.",
+        "severidad": "media"
+      }
+    ],
+    "obligaciones_financieras_covenants": [
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Mantener DSCR (Razón de Cobertura del Servicio de Deuda) no menor a 1.20x desde la Fecha de Operación Comercial",
+        "clausula": "Covenants Financieros",
+        "frecuencia": "En cada Fecha de Cálculo (certificación RCSD requerida)",
+        "consecuencia_incumplimiento": "Bloqueo automático de distribuciones a sponsors. Si DSCR cae por debajo de 1.1x constituye Evento de Incumplimiento. Davivienda puede acelerar toda la deuda y ejecutar garantías.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Mantener Cuenta de Reserva de Servicio de Deuda (DSRA) fondeada con al menos 3 meses de servicio de deuda",
+        "clausula": "Covenants Financieros - Reserva",
+        "frecuencia": "Continuo - verificación periódica",
+        "consecuencia_incumplimiento": "Bloqueo inmediato de distribuciones. Posible Evento de Incumplimiento. Davivienda puede instruir uso de fondos de reserva para pago de deuda.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "No crear ni permitir gravámenes sobre activos del proyecto sin consentimiento previo de Davivienda (Negative Pledge)",
+        "clausula": "Sección 5.02 - Obligaciones de No Hacer",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento. Davivienda puede exigir garantías adicionales y acelerar los préstamos.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "No incurrir en deuda financiera adicional sin autorización previa del Prestamista",
+        "clausula": "Sección 5.02 - Obligaciones de No Hacer",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento por incumplimiento de covenant negativo. Posible cross-default con nueva deuda.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "No realizar Pagos Restringidos (distribuciones) salvo que se cumplan todas las condiciones requeridas",
+        "clausula": "Sección 5.02 - Pagos Restringidos",
+        "frecuencia": "Antes de cada distribución",
+        "consecuencia_incumplimiento": "Distribución no autorizada constituye Evento de Incumplimiento. Davivienda puede exigir devolución de fondos distribuidos y acelerar la deuda.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "No realizar disposición de activos del proyecto (excepto deteriorados o en curso ordinario)",
+        "clausula": "Sección 5.02 - Obligaciones de No Hacer",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento. Afecta las garantías en favor de Davivienda.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "No realizar préstamos a terceros",
+        "clausula": "Sección 5.02 - Obligaciones de No Hacer",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento por desvío de fondos del proyecto.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "No participar en negocios conjuntos que compartan ingresos del proyecto",
+        "clausula": "Sección 5.02 - Obligaciones de No Hacer",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento. Afecta flujo de caja disponible para servicio de deuda.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "No realizar coberturas especulativas (speculative hedging)",
+        "clausula": "Sección 5.02 - Obligaciones de No Hacer",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento por exposición a riesgo no autorizado.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Mantener mecanismo de cascada de pagos (Waterfall) según el orden de prioridad establecido",
+        "clausula": "Sección 5.01 - Cascada de Pagos",
+        "frecuencia": "En cada período de pago",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento. Cualquier desviación del orden de pagos constituye incumplimiento grave.",
+        "severidad": "critica"
+      }
+    ],
+    "obligaciones_de_reporte": [
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Entregar estados financieros anuales auditados",
+        "clausula": "Sección 5.01 - Reporte Financiero",
+        "frecuencia": "Anual - dentro de 120 días del cierre fiscal",
+        "consecuencia_incumplimiento": "Incumplimiento de obligación de reporte. Puede constituir Evento de Incumplimiento tras período de remedio de 30 días. Impide verificación de covenants financieros.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Entregar estados financieros semestrales no auditados",
+        "clausula": "Sección 5.01 - Reporte Financiero",
+        "frecuencia": "Semestral - dentro de 90 días del cierre del semestre",
+        "consecuencia_incumplimiento": "Incumplimiento de obligación de reporte. Davivienda pierde visibilidad financiera del proyecto.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Notificar Eventos de Incumplimiento o situaciones que puedan constituir Default",
+        "clausula": "Sección 5.01 - Notificaciones",
+        "frecuencia": "Dentro de 10 Días Hábiles de tener conocimiento",
+        "consecuencia_incumplimiento": "Agrava la situación de default. Davivienda puede argumentar ocultamiento y actuar discrecionalmente para acelerar la deuda.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Notificar cambios en contratos PPA (Power Purchase Agreements)",
+        "clausula": "Sección 5.01 - Notificaciones",
+        "frecuencia": "Dentro de 10 Días Hábiles ante cualquier cambio",
+        "consecuencia_incumplimiento": "Incumplimiento de obligación de notificación. Puede afectar la evaluación de flujos de caja del proyecto.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Notificar litigios con cuantía superior a COP 2,500,000,000",
+        "clausula": "Sección 5.01 - Notificaciones",
+        "frecuencia": "Dentro de 10 Días Hábiles de tener conocimiento",
+        "consecuencia_incumplimiento": "Incumplimiento de obligación de información. Puede constituir Evento de Incumplimiento si el litigio tiene Efecto Material Adverso.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Notificar eventos que activen prepago obligatorio",
+        "clausula": "Sección 5.01 - Notificaciones",
+        "frecuencia": "Dentro de 10 Días Hábiles del evento",
+        "consecuencia_incumplimiento": "Incumplimiento de obligación de notificación. Posible agravamiento del incumplimiento subyacente.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Ingeniero Independiente",
+        "obligacion": "Entregar reportes mensuales de avance de construcción",
+        "clausula": "Sección 5.01 - Monitoreo de Construcción",
+        "frecuencia": "Mensual durante fase de construcción (10 meses)",
+        "consecuencia_incumplimiento": "Davivienda puede suspender desembolsos. Prestatario incumple obligación de monitoreo.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Entregar certificado de Fecha de Operación Comercial (COD) para cada planta",
+        "clausula": "Sección 5.01 - Operación Comercial",
+        "frecuencia": "Una vez al alcanzar COD de cada planta",
+        "consecuencia_incumplimiento": "No se activan condiciones post-COD. Puede afectar la transición del período de gracia a amortización.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Notificar sustitución de PPAs con al menos 2 meses de anticipación",
+        "clausula": "Sección 5.01 - Sustitución PPA",
+        "frecuencia": "Con 2 meses de anticipación ante cada sustitución",
+        "consecuencia_incumplimiento": "Sustitución no autorizada puede constituir Evento de Incumplimiento. Afecta evaluación de ingresos del proyecto.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Notificar cambio de control con 20 días hábiles de anticipación",
+        "clausula": "Sección 5.01 - Cambio de Control",
+        "frecuencia": "Con 20 días hábiles de anticipación ante cada evento",
+        "consecuencia_incumplimiento": "Cambio de control no autorizado constituye Evento de Incumplimiento. Davivienda puede acelerar toda la deuda y ejecutar garantías.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Mantener registros contables según NIIF (Normas Internacionales de Información Financiera)",
+        "clausula": "Sección 5.01 - Contabilidad",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Incumplimiento de obligación contable. Puede invalidar estados financieros y reportes de covenants.",
+        "severidad": "media"
+      }
+    ],
+    "obligaciones_ambientales_sociales": [
+      {
+        "responsable": "Prestatario / Desarrollador",
+        "obligacion": "Cumplir con todas las leyes y regulaciones ambientales aplicables en Colombia",
+        "clausula": "Sección 5.01 - Cumplimiento Ambiental",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento si genera Efecto Material Adverso. Riesgo de sanciones regulatorias y suspensión de operaciones por autoridades ambientales.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Mantener pólizas de seguro ambiental con aseguradoras calificadas AA- o superior",
+        "clausula": "Sección 5.01 - Seguros",
+        "frecuencia": "Continuo - renovación anual",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento. Davivienda puede tomar seguros por cuenta del Prestatario a su costo.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Mantener títulos legítimos sobre los terrenos y predios de los proyectos",
+        "clausula": "Sección 5.01 - Derechos sobre Predios",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento. Pérdida de derechos prediales afecta directamente las garantías y la operación del proyecto.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Obtener y mantener vigentes todos los permisos y licencias ambientales requeridos",
+        "clausula": "Sección 5.01 - Permisos",
+        "frecuencia": "Continuo - incluyendo renovaciones",
+        "consecuencia_incumplimiento": "Puede constituir Evento de Incumplimiento. Suspensión de operaciones por la autoridad ambiental (ANLA, CAR).",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario / Desarrollador",
+        "obligacion": "Obtener y mantener permisos de conexión a red eléctrica para cada planta",
+        "clausula": "Sección 5.01 - Punto de Conexión",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Imposibilidad de inyectar energía a la red. Pérdida de ingresos que afecta DSCR y capacidad de pago.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Usar los fondos del crédito exclusivamente para la construcción de las plantas solares autorizadas",
+        "clausula": "Sección 5.01 - Uso de Fondos",
+        "frecuencia": "Continuo - durante período de desembolso",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento inmediato por desvío de fondos. Davivienda puede suspender desembolsos y acelerar la deuda.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Mantener todos los activos del proyecto en buen estado de funcionamiento",
+        "clausula": "Sección 5.01 - Mantenimiento de Activos",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Deterioro de activos afecta garantías y generación de energía. Puede constituir Evento de Incumplimiento.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Obtener aprobación del presupuesto OPEX por parte del Prestamista",
+        "clausula": "Sección 5.01 - Aprobación OPEX",
+        "frecuencia": "Anual",
+        "consecuencia_incumplimiento": "Gastos operativos no aprobados pueden ser objetados por Davivienda. Incumplimiento de obligación contractual.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Todos los Obligors",
+        "obligacion": "Realizar transacciones con afiliados únicamente en condiciones de mercado (arm's length)",
+        "clausula": "Sección 5.01 y 5.02 - Transacciones con Afiliados",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento si se desvían recursos del proyecto a condiciones no de mercado.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Registrar las Garantías Mobiliarias ante el registro correspondiente",
+        "clausula": "Sección 5.01 - Registro de Garantías",
+        "frecuencia": "Al momento de constitución y ante modificaciones",
+        "consecuencia_incumplimiento": "Garantías no oponibles a terceros. Davivienda pierde prioridad. Incumplimiento de obligación contractual.",
+        "severidad": "alta"
+      }
+    ],
+    "obligaciones_operativas_legales": [
+      {
+        "responsable": "Todos los Obligors",
+        "obligacion": "Preservar existencia jurídica, capacidad legal y autorizaciones vigentes",
+        "clausula": "Sección 5.01 - Preservación de Existencia",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento. Puede afectar validez de los documentos de la transacción y las garantías constituidas.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Todos los Obligors",
+        "obligacion": "Cumplir con todas las leyes colombianas aplicables",
+        "clausula": "Sección 5.01 - Cumplimiento Legal",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento si el incumplimiento afecta materialmente la capacidad de cumplir obligaciones financieras.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Mantener vigentes todos los documentos de la transacción sin modificación no autorizada",
+        "clausula": "Sección 5.01 - Documentos de Transacción",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento. Modificación no autorizada invalida la estructura contractual.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "No suspender ni terminar documentos de la transacción sin autorización del Prestamista",
+        "clausula": "Sección 5.02 - Obligaciones de No Hacer",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento inmediato. Afecta toda la estructura de garantías y flujo de ingresos.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Todos los Obligors",
+        "obligacion": "No participar en prácticas de corrupción, lavado de activos o financiación del terrorismo (Anticorrupción/AML)",
+        "clausula": "Sección 5.02 - Anticorrupción/AML",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento inmediato y sin cura. Terminación de la facilidad. Posible reporte a autoridades (UIAF, Fiscalía). Consecuencias penales.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "No cambiar el año fiscal sin autorización del Prestamista",
+        "clausula": "Sección 5.02 - Obligaciones de No Hacer",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Incumplimiento de covenant negativo. Afecta comparabilidad de reportes financieros y cálculo de covenants.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "No disponer de derechos ni garantías constituidas sin autorización",
+        "clausula": "Sección 5.02 - Disposición de Derechos",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento. Afecta directamente la seguridad del Prestamista.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Sponsors",
+        "obligacion": "Mantener permanencia en la estructura del proyecto según términos acordados",
+        "clausula": "Sección 5.01 - Permanencia de Sponsors",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Posible Evento de Incumplimiento por cambio de control. Davivienda puede exigir prepago anticipado.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Mantener contrato de monitoreo con Ingeniero Independiente durante construcción y operación",
+        "clausula": "Sección 5.01 - Ingeniero Independiente",
+        "frecuencia": "Continuo durante construcción; periódico durante operación",
+        "consecuencia_incumplimiento": "Davivienda pierde monitoreo técnico independiente. Puede suspender desembolsos durante construcción.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Mantener todas las pólizas de seguro requeridas con aseguradoras calificadas AA- o superior, designando al Prestatario como beneficiario",
+        "clausula": "Sección 5.01 - Seguros",
+        "frecuencia": "Continuo - renovación anual y verificación de calificación de aseguradoras",
+        "consecuencia_incumplimiento": "Evento de Incumplimiento. Davivienda puede tomar seguros por cuenta del Prestatario a su costo. Activos del proyecto quedan expuestos sin cobertura.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Mantener cumplimiento de PPAs (contratos de compraventa de energía) y obligaciones de entrega",
+        "clausula": "Sección 5.01 - Contratos de Offtake",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Pérdida de ingresos del proyecto. Posible Evento de Incumplimiento. Afecta directamente el DSCR y la capacidad de servicio de deuda.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Permitir acceso al Prestamista a libros, cuentas, registros y activos del proyecto",
+        "clausula": "Sección 5.01 - Acceso e Inspección",
+        "frecuencia": "Según solicitud razonable del Prestamista",
+        "consecuencia_incumplimiento": "Incumplimiento de obligación contractual. Davivienda puede interpretar como ocultamiento de información material.",
+        "severidad": "alta"
+      }
+    ]
+  },
+  "resumen_ejecutivo": {
+    "riesgo_1": {
+      "titulo": "Control estricto del banco local con garantías de primer rango y cash sweep total",
+      "nivel": "alto",
+      "descripcion": "Davivienda tiene control fuerte: garantías de primer rango sobre todos los activos y derechos fiduciarios, cash sweep del 100% del flujo de caja excedente, DSCR mínimo de 1.20x, restricciones de cambio de control con 20 días de anticipación, y pagarés ejecutables inmediatamente bajo ley colombiana. La estructura de cascada de pagos prioriza el servicio de deuda sobre cualquier distribución a sponsors."
+    },
+    "riesgo_2": {
+      "titulo": "Contrato en fase borrador con múltiples términos por definir",
+      "nivel": "medio",
+      "descripcion": "El contrato es un borrador (febrero 18, 2026) con numerosos campos marcados como [•] pendientes de negociación, incluyendo la tasa de interés (spread sobre IBR), la fecha de ejecución, y posiblemente otros términos comerciales. Los términos finales podrían variar significativamente. Adicionalmente, el DSCR de default (1.1x) es ajustado para un portafolio de plantas solares pequeñas (0.99 MW cada una)."
+    },
+    "beneficio_1": {
+      "titulo": "Financiamiento en moneda local que elimina riesgo cambiario con tenor razonable",
+      "nivel": "positivo",
+      "descripcion": "Crédito denominado y desembolsado íntegramente en COP elimina el riesgo cambiario, ventaja significativa frente al crédito FMO en USD. Plazo de 10 años es razonable para project finance solar. Estructura 70/30 deuda-equity es estándar para el mercado colombiano. Los términos bancarios son consistentes con prácticas del mercado local colombiano, facilitando la ejecución y el entendimiento regulatorio."
+    }
+  }
+}

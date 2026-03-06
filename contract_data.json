@@ -1,0 +1,618 @@
+{
+  "informacion_del_contrato": {
+    "tipo_de_contrato": "Term Facility Agreement (Contrato de Crédito a Plazo)",
+    "nombre_del_proyecto": "Project Sol de la Sierra",
+    "numero_de_referencia": "4128-0323-4655, v. 9",
+    "fecha_de_ejecucion": "27 de octubre de 2025"
+  },
+  "partes_involucradas": {
+    "prestamista": {
+      "nombre": "Nederlandse Financierings-Maatschappij voor Ontwikkelingslanden N.V. (FMO)",
+      "tipo": "Banco de Desarrollo Holandés (Entrepreneurial Development Bank)",
+      "domicilio": "Anna van Saksenlaan 71, 2593 HW La Haya, Países Bajos",
+      "rol": "Prestamista / Parte Asegurada (Secured Party)"
+    },
+    "prestatario": {
+      "nombre": "P.A. Sol de la Sierra",
+      "tipo": "Patrimonio Autónomo (Deal Trust) bajo ley colombiana",
+      "fiduciario": "Fiduciaria Bancolombia S.A., Sociedad Fiduciaria",
+      "fideicomitentes": ["Solenium S.A.S.", "FAP Nueva Frontera", "Unergy Energía Digital S.A.S E.S.P."],
+      "fecha_contrato_fiducia": "23 de septiembre de 2025"
+    },
+    "patrocinadores_sponsors": [
+      {
+        "nombre": "Solenium S.A.S.",
+        "tipo": "Sociedad por Acciones Simplificada",
+        "domicilio": "Calle 46 No. 70A-79, Medellín, Antioquia, Colombia",
+        "rol": "Sponsor, Contratista EPC y Contratista O&M"
+      },
+      {
+        "nombre": "Ayurá S.A.S.",
+        "tipo": "Sociedad por Acciones Simplificada",
+        "domicilio": "No especificado en las secciones revisadas",
+        "rol": "Sponsor"
+      }
+    ],
+    "desarrollador": {
+      "nombre": "Unergy Energía Digital S.A.S E.S.P.",
+      "tipo": "Sociedad por Acciones Simplificada / Empresa de Servicios Públicos",
+      "domicilio": "Medellín, Colombia",
+      "rol": "Desarrollador, Subcontratista O&M, Agente bajo Mandate Agreement para contratos Offtake"
+    },
+    "asesores": {
+      "asesor_ambiental_social": "ERM Colombia Ltda (FIESA)",
+      "asesor_seguros": "INDECS Consulting Limited (62-64 Cornhill, London, EC3V 3NH, Inglaterra)",
+      "asesor_tecnico": "Revergy",
+      "asesor_legal_local": "Brigard & Urrutia Abogados S.A.S. (BU)"
+    }
+  },
+  "condiciones_financieras": {
+    "monto_total_del_credito": {
+      "valor": "Hasta el equivalente en Moneda Local (COP) de USD 30,000,000",
+      "moneda_base": "USD (dólares estadounidenses)",
+      "moneda_de_desembolso": "COP (pesos colombianos) - equivalente en Moneda Local",
+      "valor_numerico_usd": 30000000
+    },
+    "estructura_de_tramos": {
+      "tranche_1": {
+        "compromiso": "Equivalente en Moneda Local de hasta USD 18,000,000",
+        "valor_numerico_usd": 18000000,
+        "estado": "Disponible desde la firma"
+      },
+      "tranche_2": {
+        "compromiso": "Equivalente en Moneda Local de hasta USD 12,000,000",
+        "valor_numerico_usd": 12000000,
+        "estado": "Sujeto a Solicitud de Activación y aprobación del Prestamista (inicialmente USD 0)",
+        "activacion": "Requiere Activation Request del Prestatario y aprobación escrita de FMO (Cláusula 2.2(g))"
+      }
+    },
+    "tasa_de_interes_ordinaria": {
+      "tipo": "Variable",
+      "componentes": {
+        "tasa_de_referencia": "IBR (Indicador Bancario de Referencia) a 6 meses, nominal",
+        "tasa_de_referencia_alternativa": "Para préstamos en USD: SOFR (Secured Overnight Financing Rate)",
+        "margen": "3.0% por año",
+        "reduccion_de_margen": "0.50% de reducción durante períodos en que el impuesto de retención en Colombia sea pagadero"
+      },
+      "piso_tasa_referencia": "Si IBR o tasa de referencia es menor a cero, se considera cero",
+      "determinacion": "11:00 a.m., 2 Días Hábiles antes del primer día del Período de Interés relevante",
+      "margen_numerico": 3.0
+    },
+    "tasa_de_interes_moratorio": "Según Cláusula 9.5 (Default Interest) - tasa adicional sobre Sumas Impagas",
+    "CAT": "No aplica - contrato de financiamiento internacional de desarrollo",
+    "comisiones_y_cargos": {
+      "front_end_fee": {
+        "monto": "1.25% del monto principal agregado del Préstamo relevante",
+        "base_legal": "Cláusula 13.1",
+        "porcentaje": 1.25
+      },
+      "commitment_fee": "Según Cláusula 13 (Fees) - aplicable sobre compromisos no utilizados",
+      "waiver_and_amendment_fee": "Según Cláusula 13.4",
+      "costos_de_transaccion": "Prestatario cubre todos los costos legales, honorarios, gastos de viaje de FMO",
+      "costos_monitoreo_ambiental": "Prestatario paga costos de monitoreo E&S del Prestamista",
+      "costos_verificacion_ambiental": "Prestatario paga costos del asesor FIESA"
+    },
+    "covenants_financieros": {
+      "DSCR_historico_minimo": 1.1,
+      "DSCR_proyectado_minimo": 1.1,
+      "DSCR_para_distribucion": 1.2,
+      "base_calculo": "Probados en cada Fecha de Cálculo según IFRS",
+      "año_fiscal_prestatario": "Cierre al 31 de diciembre"
+    }
+  },
+  "plazos_y_pagos": {
+    "fecha_de_firma": "27 de octubre de 2025",
+    "fecha_de_vencimiento_terminacion": "14 años después de la Fecha de Firma (aproximadamente octubre de 2039)",
+    "plazo_anos": 14,
+    "frecuencia_de_pago_intereses": "Semestral - 15 de julio y 15 de enero de cada año",
+    "calendario_de_amortizacion": "Según Schedule 17 (Repayment Schedule) - a ser acordado entre Prestatario y FMO",
+    "numero_total_de_pagos": "Definido en Schedule 17 (Repayment Schedule)",
+    "primer_pago_de_capital": "Primera Fecha de Repago según Repayment Schedule",
+    "periodo_de_gracia": "Implícito hasta el First Repayment Date (posterior a Financial Completion Date)",
+    "fecha_consolidacion_tasa": "Primera Fecha de Pago de Intereses tras desembolso completo o último día del Período de Disponibilidad"
+  },
+  "garantias": {
+    "prenda_derechos_fiduciarios": {
+      "descripcion": "Trust Rights Pledge - prenda sobre los Derechos Fiduciarios del Prestatario en favor de FMO",
+      "alcance": "Derechos fiduciarios derivados del Trust Agreement y el FAP Trust Agreement"
+    },
+    "cuentas_del_proyecto": {
+      "descripcion": "Todas las Cuentas del Proyecto pignoradas a FMO como Transaction Security",
+      "tipos": ["Cuenta de Reserva de Servicio de Deuda (DSRA)", "Cuenta de Distribución", "Otras cuentas del proyecto"]
+    },
+    "cuenta_reserva_servicio_deuda_DSRA": {
+      "monto_requerido": "Igual a 6 meses de Servicio de Deuda",
+      "alternativa": "Carta de crédito no recurso (DSRA LC) emitida por banco internacional con calificación A- o superior"
+    },
+    "negative_pledge": "Cláusula 23.1 - Prestatario no puede crear ni permitir gravámenes sin consentimiento previo escrito de FMO",
+    "ranking_de_seguridad": "First ranking priority (primer rango), sin ranking previo o pari passu sin aprobación de FMO"
+  },
+  "clausulas_criticas": {
+    "prepago": {
+      "permitido": true,
+      "penalidad_antes_4_anos": "2% del monto principal agregado prepagado",
+      "penalidad_4_a_8_anos": "1% del monto principal agregado prepagado",
+      "penalidad_despues_8_anos": "Sin Prepayment Fee",
+      "prepago_obligatorio": "Cláusula 8.3 (Mandatory Prepayment)"
+    },
+    "causales_de_terminacion_eventos_de_default": [
+      "Falta de pago (Non-payment)",
+      "Incumplimiento de covenants financieros (DSCR < 1.1)",
+      "Incumplimiento de representaciones y garantías",
+      "Incumplimiento de compromisos (undertakings)",
+      "Cross-default con otros instrumentos financieros",
+      "Insolvencia o procedimientos concursales",
+      "Efecto Material Adverso (Material Adverse Effect)",
+      "Ilegalidad",
+      "Cambio de control (Change of Control - Cláusula 8.2)",
+      "Eventos de Default del Proyecto (Cláusula 24.19)",
+      "Incumplimiento ambiental y social",
+      "Prácticas objetables (Objectionable Practices)",
+      "Terminación o incumplimiento de Project Documents"
+    ],
+    "cambio_de_control": "Cláusula 8.2 - Puede resultar en cancelación de compromisos y/o prepago obligatorio",
+    "jurisdiccion_y_ley_aplicable": {
+      "documentos_financieros_principales": "Leyes del Estado de Nueva York, Estados Unidos",
+      "documentos_de_seguridad_colombianos": "Leyes de la República de Colombia",
+      "titulo_ejecutivo": "Cada pagaré (Note) constituye un título ejecutivo bajo ley colombiana"
+    },
+    "distribucion_permitida": {
+      "condiciones": [
+        "Solo desde la Distribution Account",
+        "No antes de Financial Completion Date",
+        "No antes de First Repayment Date",
+        "DSRA con al menos el monto requerido",
+        "Sin Default pendiente o probable",
+        "Cumplimiento de financial covenants",
+        "DSCR Proyectado >= 1.2",
+        "DSCR Histórico >= 1.2"
+      ]
+    }
+  },
+  "descripcion_del_proyecto": {
+    "tipo": "Portafolio de plantas solares fotovoltaicas en Colombia",
+    "numero_de_proyectos": 40,
+    "capacidad_por_proyecto_mw": 1,
+    "capacidad_agregada_mw": 40,
+    "pais": "Colombia",
+    "operador_de_red": "OR (operador de red)",
+    "registro_mercado": "XM S.A. E.S.P."
+  },
+  "responsabilidades": {
+    "obligaciones_de_pago": [
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de principal según Repayment Schedule (Schedule 17)",
+        "clausula": "Cláusula 7",
+        "frecuencia": "Según calendario acordado",
+        "consecuencia_incumplimiento": "Event of Default inmediato (Cl. 24.1 - Non-payment). FMO puede declarar todos los préstamos vencidos y exigibles de inmediato, cancelar compromisos no utilizados y ejecutar la Transaction Security.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de intereses en las Fechas de Pago de Intereses (15 julio y 15 enero)",
+        "clausula": "Cláusula 9",
+        "frecuencia": "Semestral",
+        "consecuencia_incumplimiento": "Event of Default (Non-payment). Se activa interés moratorio adicional (Cl. 9.5) sobre sumas impagas. FMO puede acelerar toda la deuda.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de Front-End Fee (1.25% del principal)",
+        "clausula": "Cláusula 13.1",
+        "frecuencia": "Al momento del desembolso",
+        "consecuencia_incumplimiento": "Event of Default por Non-payment. Puede condicionar futuros desembolsos.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de Commitment Fee sobre compromisos no utilizados",
+        "clausula": "Cláusula 13",
+        "frecuencia": "Periódico durante período de disponibilidad",
+        "consecuencia_incumplimiento": "Event of Default por Non-payment.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de costos de transacción, legales y gastos de viaje de FMO",
+        "clausula": "Cláusula 17.1",
+        "frecuencia": "Dentro de 15 Días Hábiles tras demanda escrita",
+        "consecuencia_incumplimiento": "Incumplimiento de obligación contractual. Puede constituir Default si no se remedia.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de costos de enmienda y waiver",
+        "clausula": "Cláusula 17.2",
+        "frecuencia": "Dentro de 15 Días Hábiles tras demanda",
+        "consecuencia_incumplimiento": "Incumplimiento de undertaking. Puede escalar a Event of Default.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de costos de enforcement a cada Secured Party",
+        "clausula": "Cláusula 17.3",
+        "frecuencia": "Dentro de 15 Días Hábiles tras demanda",
+        "consecuencia_incumplimiento": "FMO recupera costos directamente de los activos del prestatario bajo Transaction Security.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de costos de monitoreo ambiental y social del Prestamista",
+        "clausula": "Cláusula 17.4 y 17.5",
+        "frecuencia": "Dentro de 10-15 Días Hábiles tras demanda",
+        "consecuencia_incumplimiento": "Incumplimiento de undertaking. Puede impedir verificación ambiental requerida.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pago de costos del asesor ambiental independiente (FIESA/ERM)",
+        "clausula": "Cláusula 17.6",
+        "frecuencia": "Dentro de 10 Días Hábiles tras demanda",
+        "consecuencia_incumplimiento": "Incumplimiento de undertaking contractual.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Indemnización a FMO por diferencias cambiarias en conversión de moneda",
+        "clausula": "Cláusula 16.1",
+        "frecuencia": "Dentro de 3 Días Hábiles tras demanda",
+        "consecuencia_incumplimiento": "FMO puede deducir de cuentas pignoradas. Event of Default por Non-payment.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Indemnización general a FMO y afiliados por costos, pérdidas y responsabilidades",
+        "clausula": "Cláusula 16.2 y 16.3",
+        "frecuencia": "Dentro de 5-10 Días Hábiles tras demanda",
+        "consecuencia_incumplimiento": "FMO puede ejercer remedios bajo Finance Documents y ejecutar garantías.",
+        "severidad": "alta"
+      }
+    ],
+    "obligaciones_financieras_covenants": [
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Mantener DSCR Histórico no menor a 1.1x en cada Fecha de Cálculo",
+        "clausula": "Cláusula 20.1(a)",
+        "frecuencia": "En cada Fecha de Cálculo (semestral)",
+        "consecuencia_incumplimiento": "Event of Default por incumplimiento de financial covenant. FMO puede acelerar toda la deuda, cancelar compromisos y ejecutar garantías. Bloqueo automático de distribuciones.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Mantener DSCR Proyectado no menor a 1.1x en cada Fecha de Cálculo",
+        "clausula": "Cláusula 20.1(b)",
+        "frecuencia": "En cada Fecha de Cálculo (semestral)",
+        "consecuencia_incumplimiento": "Event of Default por incumplimiento de financial covenant. Mismas consecuencias que DSCR Histórico.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Mantener DSRA con al menos 6 meses de Servicio de Deuda",
+        "clausula": "Cláusula 21.1",
+        "frecuencia": "Continuo - antes de Financial Completion o 6 meses antes del First Repayment",
+        "consecuencia_incumplimiento": "Bloqueo de distribuciones. Posible Event of Default. FMO puede instruir al Account Bank a deducir fondos de la DSRA para pago de deuda.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "No crear ni permitir gravámenes sobre activos sin consentimiento de FMO (Negative Pledge)",
+        "clausula": "Cláusula 23.1",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Event of Default. FMO puede exigir seguridad adicional y acelerar los préstamos.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "No incurrir en deuda financiera adicional sin aprobación de FMO",
+        "clausula": "Cláusula 23.10(b)",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Event of Default por incumplimiento de Negative Undertaking. Posible cross-default con nueva deuda.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Cumplir condiciones para Distribuciones Permitidas (DSCR ≥ 1.2, sin Default, DSRA fondeada)",
+        "clausula": "Definición de Permitted Distribution",
+        "frecuencia": "Antes de cada distribución",
+        "consecuencia_incumplimiento": "Distribución no autorizada constituye Event of Default. FMO puede exigir devolución de fondos distribuidos.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pignorar todas las Cuentas del Proyecto a favor de FMO",
+        "clausula": "Cláusula 21.2",
+        "frecuencia": "Continuo - incluye cuentas nuevas",
+        "consecuencia_incumplimiento": "No se pueden abrir cuentas sin notificar a FMO. Incumplimiento constituye breach de Transaction Security.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Registrar deuda externa ante Banco de la República de Colombia",
+        "clausula": "Cláusula 22.24",
+        "frecuencia": "Antes del primer desembolso y ante modificaciones",
+        "consecuencia_incumplimiento": "Incumplimiento regulatorio colombiano. Puede afectar legalidad de transferencias y constituir Event of Default.",
+        "severidad": "alta"
+      }
+    ],
+    "obligaciones_de_reporte": [
+      {
+        "responsable": "Prestatario / Sponsors",
+        "obligacion": "Entregar estados financieros anuales auditados (standalone y consolidados)",
+        "clausula": "Cláusula 19.1(a)",
+        "frecuencia": "Anual - dentro de 180 días del cierre fiscal",
+        "consecuencia_incumplimiento": "Incumplimiento de Information Undertaking. Puede constituir Event of Default tras período de remedio. Impide verificación de covenants financieros.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario / Sponsors",
+        "obligacion": "Entregar estados financieros semestrales no auditados",
+        "clausula": "Cláusula 19.1(b)",
+        "frecuencia": "Semestral - dentro de 60 días del cierre del semestre",
+        "consecuencia_incumplimiento": "Incumplimiento de Information Undertaking. FMO pierde visibilidad financiera.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Entregar Compliance Certificate con cálculos de financial covenants",
+        "clausula": "Cláusula 19.5",
+        "frecuencia": "Con cada set de estados financieros",
+        "consecuencia_incumplimiento": "Imposibilidad de verificar cumplimiento de covenants. Puede constituir Default.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Entregar Updated Project List de Proyectos Elegibles",
+        "clausula": "Cláusula 19.3",
+        "frecuencia": "En cada Fecha de Cálculo y 10 días antes de cada Utilization Request",
+        "consecuencia_incumplimiento": "FMO no acepta nuevos Proyectos Elegibles. Puede bloquear desembolsos.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Entregar Business Plan anual con presupuesto de inversión",
+        "clausula": "Cláusula 19.6",
+        "frecuencia": "Anual - antes del 1 de abril de cada año",
+        "consecuencia_incumplimiento": "Incumplimiento de Information Undertaking.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Reporte de impacto de desarrollo para FMO",
+        "clausula": "Cláusula 19.7",
+        "frecuencia": "Anual - junto con estados financieros",
+        "consecuencia_incumplimiento": "Incumplimiento de undertaking. FMO requiere datos para su reporte público en www.fmo.nl.",
+        "severidad": "baja"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Notificar inmediatamente cualquier Default o Event of Default",
+        "clausula": "Cláusula 19.14",
+        "frecuencia": "Inmediato al tener conocimiento",
+        "consecuencia_incumplimiento": "Agrava la situación de default. FMO puede argumentar ocultamiento y actuar discrecionalmente.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Notificar litigios, procedimientos administrativos o arbitrajes con Material Adverse Effect",
+        "clausula": "Cláusula 19.12(b)",
+        "frecuencia": "Inmediato al tener conocimiento",
+        "consecuencia_incumplimiento": "Incumplimiento de Information Undertaking. Puede constituir Event of Default.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Proporcionar información KYC y de estructura de propiedad a solicitud de FMO",
+        "clausula": "Cláusula 19.10 y 19.15",
+        "frecuencia": "No más de una vez al año (y ante cambios)",
+        "consecuencia_incumplimiento": "Incumplimiento regulatorio. FMO puede suspender desembolsos por no cumplir con Know Your Customer.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Reportar información fiscal sobre transacciones intra-grupo",
+        "clausula": "Cláusula 19.11",
+        "frecuencia": "Anual - junto con estados financieros",
+        "consecuencia_incumplimiento": "Incumplimiento de Information Undertaking.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Ayurá (Sponsor)",
+        "obligacion": "Notificar desarrollos del procedimiento tributario ante tribunales de Bogotá",
+        "clausula": "Cláusula 19.12(q)",
+        "frecuencia": "Dentro de 5 Días Hábiles ante desarrollos materiales",
+        "consecuencia_incumplimiento": "Incumplimiento de Sponsor Undertaking específico para Ayurá.",
+        "severidad": "media"
+      }
+    ],
+    "obligaciones_ambientales_sociales": [
+      {
+        "responsable": "Solenium / Desarrollador",
+        "obligacion": "Entregar Environmental and Social Monitoring Report",
+        "clausula": "Cláusula 19.17",
+        "frecuencia": "Cada 6 meses (primero dentro de 3 meses de la firma)",
+        "consecuencia_incumplimiento": "Incumplimiento de E&S undertaking. Puede constituir Event of Default. FMO puede exigir plan de acción correctivo.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Solenium / Desarrollador",
+        "obligacion": "Implementar Environmental and Social Action Plan (ESAP)",
+        "clausula": "Cláusula 22.15",
+        "frecuencia": "Según plazos del ESAP",
+        "consecuencia_incumplimiento": "Event of Default por incumplimiento de E&S. FMO puede exigir remediación inmediata y plan de acción correctivo.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Todos los Obligors",
+        "obligacion": "Cumplir con Environmental and Social Requirements (IFC Performance Standards)",
+        "clausula": "Cláusula 22.12",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Event of Default por E&S. Daño reputacional para FMO. Puede activar Independent Complaints Mechanism.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Project Parties",
+        "obligacion": "Notificar incidentes ambientales, derrames, accidentes laborales, conflictos sociales",
+        "clausula": "Cláusula 19.8",
+        "frecuencia": "Inmediato (máximo 5 días tras el evento)",
+        "consecuencia_incumplimiento": "Incumplimiento grave. FMO puede exigir root cause analysis y plan correctivo. Posible Event of Default.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Project Parties",
+        "obligacion": "Notificar Environmental and Social Claims",
+        "clausula": "Cláusula 19.9",
+        "frecuencia": "Dentro de 5 Días Hábiles de tener conocimiento",
+        "consecuencia_incumplimiento": "FMO puede exigir root cause analysis. Agrava responsabilidad del prestatario.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Solenium / Desarrollador",
+        "obligacion": "Mantener Environmental and Social Manager calificado en todo momento",
+        "clausula": "Cláusula 22.14(c)",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Incumplimiento de Positive Undertaking. FMO puede exigir nombramiento inmediato.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Solenium",
+        "obligacion": "Publicar Public Environmental and Social Report",
+        "clausula": "Cláusula 19.17(e)",
+        "frecuencia": "Anual - dentro de 60 días de los estados financieros auditados",
+        "consecuencia_incumplimiento": "Incumplimiento de transparencia pública requerida por FMO.",
+        "severidad": "media"
+      },
+      {
+        "responsable": "Desarrollador / EPC Contractors",
+        "obligacion": "Asegurar cadena de suministro solar libre de Trabajo Forzado (Forced Labor)",
+        "clausula": "Cláusula 22.19 y Solar Supplier Forced Labor Provisions",
+        "frecuencia": "Continuo - due diligence en cada contrato",
+        "consecuencia_incumplimiento": "Event of Default grave. FMO puede exigir terminación de contratos con proveedores infractores. Riesgo reputacional y legal internacional.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Sponsors / Desarrollador",
+        "obligacion": "Notificar Collective Dismissals con 3 meses de anticipación",
+        "clausula": "Cláusula 19.19",
+        "frecuencia": "Ante cada evento",
+        "consecuencia_incumplimiento": "FMO puede exigir plan de mitigación y retrenchment plan (Cl. 23.15).",
+        "severidad": "media"
+      }
+    ],
+    "obligaciones_operativas_legales": [
+      {
+        "responsable": "Todos los Obligors",
+        "obligacion": "Mantener existencia corporativa y autorizaciones vigentes",
+        "clausula": "Cláusula 22.1 y 22.2",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Event of Default. Puede afectar validez de los Finance Documents y Transaction Security.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Todos los Obligors",
+        "obligacion": "Cumplir con todas las leyes aplicables",
+        "clausula": "Cláusula 22.3",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Event of Default si el incumplimiento afecta materialmente la capacidad de cumplir obligaciones financieras.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario / Obligors",
+        "obligacion": "Mantener seguros según Schedule 9 (Insurance Requirements) con aseguradoras A- rated",
+        "clausula": "Cláusula 22.4",
+        "frecuencia": "Continuo - revisión anual por Insurance Advisor de FMO",
+        "consecuencia_incumplimiento": "Event of Default. FMO puede tomar seguros por cuenta del Prestatario (a su costo). FMO es loss payee en claims > USD 500,000.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Pagar todos los impuestos puntualmente",
+        "clausula": "Cláusula 22.5",
+        "frecuencia": "Según calendario fiscal",
+        "consecuencia_incumplimiento": "Posible Event of Default si genera Material Adverse Effect. Riesgo de embargo fiscal sobre activos.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario",
+        "obligacion": "Mantener ranking pari passu de obligaciones con FMO",
+        "clausula": "Cláusula 22.8",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Event of Default. Afecta prioridad de pago de FMO.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Todos los Obligors",
+        "obligacion": "Mantener Transaction Security en primer rango (first ranking priority)",
+        "clausula": "Cláusula 22.9",
+        "frecuencia": "Continuo - incluyendo registros y renovaciones",
+        "consecuencia_incumplimiento": "Event of Default. FMO pierde prioridad sobre activos. Puede exigir seguridad adicional inmediata (Cl. 22.7).",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Todos los Obligors",
+        "obligacion": "Permitir acceso a FMO a libros, cuentas, registros y activos",
+        "clausula": "Cláusula 22.6",
+        "frecuencia": "En tiempos razonables con aviso razonable, a costo del Prestatario",
+        "consecuencia_incumplimiento": "Incumplimiento de Positive Undertaking. FMO puede interpretar como ocultamiento de información.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Sponsors",
+        "obligacion": "Mantener MoU e Independent Agreements vigentes sin modificación",
+        "clausula": "Cláusula 22.22(a)",
+        "frecuencia": "Continuo - sin terminar, enmendar o renunciar sin consentimiento de FMO",
+        "consecuencia_incumplimiento": "Event of Default por incumplimiento de Sponsor Undertaking.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Prestatario / Unergy",
+        "obligacion": "Mantener cumplimiento de Offtake Contracts y obligaciones de entrega de energía",
+        "clausula": "Cláusula 22.23",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Pérdida de ingresos del proyecto. Posible Project Event of Default (Cl. 24.19). Afecta DSCR.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Todos los Obligors",
+        "obligacion": "No participar en Objectionable Practices (corrupción, lavado de dinero, sanciones, terrorismo)",
+        "clausula": "Cláusula 18.19 y 23.11",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Event of Default inmediato. Terminación de la facilidad. Posible reporte a autoridades. Consecuencias penales.",
+        "severidad": "critica"
+      },
+      {
+        "responsable": "Borrower Settlors",
+        "obligacion": "Mantener Deadlock Provisions del Trust Agreement vigentes",
+        "clausula": "Cláusula 22.20(b)",
+        "frecuencia": "Continuo - sin enmienda, waiver o terminación sin consentimiento de FMO",
+        "consecuencia_incumplimiento": "Event of Default. Afecta gobernanza del Prestatario.",
+        "severidad": "alta"
+      },
+      {
+        "responsable": "Todos los Obligors",
+        "obligacion": "Mantener y renovar Land Rights y permisos para cada Proyecto",
+        "clausula": "Cláusula 22.21(c)",
+        "frecuencia": "Continuo",
+        "consecuencia_incumplimiento": "Puede constituir Project Event of Default. Afecta operación y generación de ingresos.",
+        "severidad": "alta"
+      }
+    ]
+  },
+  "resumen_ejecutivo": {
+    "riesgo_1": {
+      "titulo": "Complejidad estructural y subordinación total del prestatario",
+      "nivel": "alto",
+      "descripcion": "FMO tiene control casi absoluto: prenda de primer rango sobre todos los activos y cuentas, negative pledge, restricciones severas, distribuciones condicionadas a DSCR >= 1.2, y poder de veto sobre deuda adicional y cambios de control."
+    },
+    "riesgo_2": {
+      "titulo": "Exposición cambiaria y costos ocultos significativos",
+      "nivel": "alto",
+      "descripcion": "Crédito denominado en USD pero desembolsado en COP. El prestatario asume todo riesgo cambiario. Costos acumulativos: Front-end Fee (1.25%), Prepayment Fees (hasta 2%), costos de transacción, monitoreo ambiental, etc."
+    },
+    "beneficio_1": {
+      "titulo": "Financiamiento de desarrollo a largo plazo con flexibilidad",
+      "nivel": "positivo",
+      "descripcion": "Plazo de 14 años superior al financiamiento comercial colombiano típico. Estructura de dos tramos da flexibilidad. Prepayment Fees decrecientes. Portafolio diversificado de 40 plantas mitiga riesgo de concentración."
+    }
+  }
+}

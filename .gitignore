@@ -1,0 +1,17 @@
+# Secrets — never commit credentials
+.streamlit/secrets.toml
+
+# Local persistence file (replaced by Supabase)
+obligation_statuses.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.env
+venv/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
