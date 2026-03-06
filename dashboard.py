@@ -1549,54 +1549,13 @@ elif page == "Financiero":
     <div class="page-subheading">Portafolio, rendimiento, covenants y condiciones de distribución por banco.</div>
     """, unsafe_allow_html=True)
 
+    # Pre-compute consolidated mock data once (shared across tabs)
     mock = generate_portfolio_mock()
-
-    # ── 1. Portafolio de Inversión ────────────────────────────────────────
-    st.markdown('<div class="section-title">Portafolio de Inversión</div>', unsafe_allow_html=True)
-    pk1, pk2, pk3, pk4 = st.columns(4)
-    with pk1:
-        st.markdown(f'<div class="metric-card"><div class="label">Valor Portafolio</div><div class="value">COP {mock["valor_portafolio"]/1e9:.1f}B</div><div class="sub">Total bajo gestión</div></div>', unsafe_allow_html=True)
-    with pk2:
-        st.markdown(f'<div class="metric-card"><div class="label">ROI Proyectado</div><div class="value">{mock["roi_proyectado"]}%</div><div class="sub">Retorno esperado</div></div>', unsafe_allow_html=True)
-    with pk3:
-        st.markdown(f'<div class="metric-card"><div class="label">Generación Anual</div><div class="value">{mock["generacion_anual_mwh"]:,.0f}</div><div class="sub">MWh / año</div></div>', unsafe_allow_html=True)
-    with pk4:
-        st.markdown(f'<div class="metric-card"><div class="label">CO₂ Evitado</div><div class="value">{mock["co2_evitado_ton"]:,.0f}</div><div class="sub">Toneladas / año</div></div>', unsafe_allow_html=True)
-
-    # ── 2. Rendimiento Financiero ─────────────────────────────────────────
-    st.markdown('<div class="section-title">Rendimiento Financiero</div>', unsafe_allow_html=True)
-    pf1, pf2, pf3, pf4 = st.columns(4)
-    with pf1:
-        st.markdown(f'<div class="metric-card"><div class="label">TIR Real</div><div class="value">{mock["tir_real"]}%</div><div class="sub">Tasa interna retorno</div></div>', unsafe_allow_html=True)
-    with pf2:
-        st.markdown(f'<div class="metric-card"><div class="label">Payback</div><div class="value">{mock["payback_anos"]}</div><div class="sub">Años recuperación</div></div>', unsafe_allow_html=True)
-    with pf3:
-        st.markdown(f'<div class="metric-card"><div class="label">Factor Planta</div><div class="value">{mock["factor_planta"]}%</div><div class="sub">Promedio portafolio</div></div>', unsafe_allow_html=True)
-    with pf4:
-        st.markdown(f'<div class="metric-card"><div class="label">Margen EBITDA</div><div class="value">{mock["margen_ebitda"]}%</div><div class="sub">Eficiencia operativa</div></div>', unsafe_allow_html=True)
-
-    # ── 3. Flujo de Caja Consolidado ──────────────────────────────────────
-    st.markdown('<div class="section-title">Flujo de Caja Consolidado</div>', unsafe_allow_html=True)
     total_mw = sum(b.get("proyecto", {}).get("capacidad_agregada_mw", 6) for b in banks)
     mo_labels, ingresos, opex, ds, fcl = generate_cashflow_mock(total_mw)
-    if HAS_PLOTLY:
-        fig_cf = go.Figure()
-        fig_cf.add_trace(go.Bar(x=mo_labels, y=[v/1e6 for v in ingresos], name="Ingresos PPA", marker_color=PURPLE))
-        fig_cf.add_trace(go.Bar(x=mo_labels, y=[-v/1e6 for v in opex], name="OPEX", marker_color="#ef4444"))
-        fig_cf.add_trace(go.Bar(x=mo_labels, y=[-v/1e6 for v in ds], name="Servicio Deuda", marker_color="#f59e0b"))
-        fig_cf.add_trace(go.Scatter(x=mo_labels, y=[v/1e6 for v in fcl], name="FCL", line=dict(color=SOLAR_YELLOW, width=3), mode="lines+markers"))
-        fig_cf.update_layout(
-            barmode="relative", plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
-            font=dict(family="Lato, sans-serif", size=11, color=DEEP_PURPLE),
-            margin=dict(l=50, r=20, t=20, b=40), height=350,
-            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0, font=dict(size=10)),
-            yaxis=dict(gridcolor="rgba(145,91,216,0.07)", zeroline=True, zerolinecolor="rgba(44,32,57,0.2)", title="COP Millones"),
-            xaxis=dict(showgrid=False),
-        )
-        st.plotly_chart(fig_cf, width="stretch", config={"displayModeBar": False})
+    months_lbl = list(MONTH_SHORT.values())
 
-    # ── 4-6. Por banco: Covenants · Histórico DSCR · Distribución ────────
-    st.markdown('<hr style="border:none;border-top:1px solid var(--u-purple-15);margin:2rem 0;">', unsafe_allow_html=True)
+    # ── Bank tabs at the TOP ──────────────────────────────────────────────
     bank_names = [b["name"] for b in banks]
     fin_tabs = st.tabs(bank_names)
 
@@ -1605,6 +1564,51 @@ elif page == "Financiero":
             c = contracts[bank_idx]
             fin = c.get("condiciones_financieras", {})
             criticas_data = c.get("clausulas_criticas", {})
+
+            # ── 1. Portafolio de Inversión ────────────────────────────────
+            st.markdown('<div class="section-title">Portafolio de Inversión</div>', unsafe_allow_html=True)
+            pk1, pk2, pk3, pk4 = st.columns(4)
+            with pk1:
+                st.markdown(f'<div class="metric-card"><div class="label">Valor Portafolio</div><div class="value">COP {mock["valor_portafolio"]/1e9:.1f}B</div><div class="sub">Total bajo gestión</div></div>', unsafe_allow_html=True)
+            with pk2:
+                st.markdown(f'<div class="metric-card"><div class="label">ROI Proyectado</div><div class="value">{mock["roi_proyectado"]}%</div><div class="sub">Retorno esperado</div></div>', unsafe_allow_html=True)
+            with pk3:
+                st.markdown(f'<div class="metric-card"><div class="label">Generación Anual</div><div class="value">{mock["generacion_anual_mwh"]:,.0f}</div><div class="sub">MWh / año</div></div>', unsafe_allow_html=True)
+            with pk4:
+                st.markdown(f'<div class="metric-card"><div class="label">CO₂ Evitado</div><div class="value">{mock["co2_evitado_ton"]:,.0f}</div><div class="sub">Toneladas / año</div></div>', unsafe_allow_html=True)
+
+            # ── 2. Rendimiento Financiero ─────────────────────────────────
+            st.markdown('<div class="section-title">Rendimiento Financiero</div>', unsafe_allow_html=True)
+            pf1, pf2, pf3, pf4 = st.columns(4)
+            with pf1:
+                st.markdown(f'<div class="metric-card"><div class="label">TIR Real</div><div class="value">{mock["tir_real"]}%</div><div class="sub">Tasa interna retorno</div></div>', unsafe_allow_html=True)
+            with pf2:
+                st.markdown(f'<div class="metric-card"><div class="label">Payback</div><div class="value">{mock["payback_anos"]}</div><div class="sub">Años recuperación</div></div>', unsafe_allow_html=True)
+            with pf3:
+                st.markdown(f'<div class="metric-card"><div class="label">Factor Planta</div><div class="value">{mock["factor_planta"]}%</div><div class="sub">Promedio portafolio</div></div>', unsafe_allow_html=True)
+            with pf4:
+                st.markdown(f'<div class="metric-card"><div class="label">Margen EBITDA</div><div class="value">{mock["margen_ebitda"]}%</div><div class="sub">Eficiencia operativa</div></div>', unsafe_allow_html=True)
+
+            # ── 3. Flujo de Caja Consolidado ──────────────────────────────
+            st.markdown('<div class="section-title">Flujo de Caja Consolidado</div>', unsafe_allow_html=True)
+            if HAS_PLOTLY:
+                fig_cf = go.Figure()
+                fig_cf.add_trace(go.Bar(x=mo_labels, y=[v/1e6 for v in ingresos], name="Ingresos PPA", marker_color=PURPLE))
+                fig_cf.add_trace(go.Bar(x=mo_labels, y=[-v/1e6 for v in opex], name="OPEX", marker_color="#ef4444"))
+                fig_cf.add_trace(go.Bar(x=mo_labels, y=[-v/1e6 for v in ds], name="Servicio Deuda", marker_color="#f59e0b"))
+                fig_cf.add_trace(go.Scatter(x=mo_labels, y=[v/1e6 for v in fcl], name="FCL", line=dict(color=SOLAR_YELLOW, width=3), mode="lines+markers"))
+                fig_cf.update_layout(
+                    barmode="relative", plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+                    font=dict(family="Lato, sans-serif", size=11, color=DEEP_PURPLE),
+                    margin=dict(l=50, r=20, t=20, b=40), height=350,
+                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0, font=dict(size=10)),
+                    yaxis=dict(gridcolor="rgba(145,91,216,0.07)", zeroline=True, zerolinecolor="rgba(44,32,57,0.2)", title="COP Millones"),
+                    xaxis=dict(showgrid=False),
+                )
+                st.plotly_chart(fig_cf, use_container_width=True, config={"displayModeBar": False},
+                                key=f"cf_{bank_idx}")
+
+            st.markdown('<hr style="border:none;border-top:1px solid var(--u-purple-15);margin:1.5rem 0;">', unsafe_allow_html=True)
 
             # ── 4. Covenants Financieros ──────────────────────────────────
             st.markdown('<div class="section-title">Covenants Financieros</div>', unsafe_allow_html=True)
@@ -1629,7 +1633,6 @@ elif page == "Financiero":
             # ── 5. Histórico DSCR ─────────────────────────────────────────
             st.markdown('<div class="section-title">Histórico DSCR</div>', unsafe_allow_html=True)
             if HAS_PLOTLY:
-                months_lbl = list(MONTH_SHORT.values())
                 fig_dscr = go.Figure()
                 fig_dscr.add_trace(go.Scatter(
                     x=months_lbl, y=mock["historico_dscr"], name="DSCR Real",
@@ -1646,7 +1649,8 @@ elif page == "Financiero":
                     yaxis=dict(gridcolor="rgba(145,91,216,0.07)", zeroline=False, range=[0.9, 1.7]),
                     xaxis=dict(showgrid=False),
                 )
-                st.plotly_chart(fig_dscr, use_container_width=True, config={"displayModeBar": False})
+                st.plotly_chart(fig_dscr, use_container_width=True, config={"displayModeBar": False},
+                                key=f"dscr_{bank_idx}")
 
             # ── 6. Distribución y Prepagos ────────────────────────────────
             st.markdown('<div class="section-title">Distribución y Prepagos</div>', unsafe_allow_html=True)
