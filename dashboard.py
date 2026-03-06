@@ -481,7 +481,7 @@ section[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] *,
 section[data-testid="stSidebar"] .stRadio label span,
 section[data-testid="stSidebar"] p, section[data-testid="stSidebar"] span,
 section[data-testid="stSidebar"] label {
-    color: rgba(253,250,247,0.85) !important;
+    color: rgba(255,255,255,0.75) !important;
 }
 section[data-testid="stSidebar"] hr { border-color: rgba(145,91,216,0.25); }
 section[data-testid="stSidebar"] .stRadio > div { gap: 0.15rem; }
@@ -493,21 +493,14 @@ section[data-testid="stSidebar"] .stRadio label:hover { background: rgba(145,91,
 section[data-testid="stSidebar"] .stRadio label:has(input:checked) {
     background: linear-gradient(135deg, #915BD8, #a66de0) !important;
 }
-section[data-testid="stSidebar"] .stRadio label:has(input:checked) span {
+section[data-testid="stSidebar"] .stRadio label:has(input:checked) span,
+section[data-testid="stSidebar"] .stRadio label:has(input:checked) p {
     color: #FDFAF7 !important; font-weight: 700;
 }
-/* Radio dot: change Baseweb's red div indicator to #F6FF72 */
-section[data-testid="stSidebar"] [data-testid="stRadio"] label:has(input:checked) > div {
-    background-color: #F6FF72 !important;
-    border-color: #F6FF72 !important;
-    box-shadow: 0 0 0 2px rgba(246,255,114,0.35) !important;
+/* Hide radio dots in sidebar entirely */
+section[data-testid="stSidebar"] [data-testid="stRadio"] label > div:first-child {
+    display: none !important;
 }
-/* Unselected dot border: subtle olive-yellow */
-section[data-testid="stSidebar"] [data-testid="stRadio"] label:not(:has(input:checked)) > div {
-    border-color: rgba(246,255,114,0.4) !important;
-}
-/* Hide native input's accent entirely */
-section[data-testid="stSidebar"] input[type="radio"] { accent-color: #F6FF72 !important; }
 
 /* ── Hamburger / sidebar toggle ──────────────────── */
 button[kind="headerNoPadding"],
@@ -704,7 +697,9 @@ div[data-testid="stPills"] button[aria-pressed="true"] {
     display: none !important;
 }
 /* Force black text on unselected area pills */
-[data-testid="stMain"] [data-testid="stRadio"] label span {
+[data-testid="stMain"] [data-testid="stRadio"] label span,
+[data-testid="stMain"] [data-testid="stRadio"] label p,
+[data-testid="stMain"] [data-testid="stRadio"] label div {
     color: #2C2039 !important;
 }
 /* Hide the radio group label ("Área") — it renders as a pill due to our CSS */
