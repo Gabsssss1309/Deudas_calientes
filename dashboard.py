@@ -994,7 +994,7 @@ with st.sidebar:
     st.markdown('<div style="text-align:center; font-size:0.6rem; color:rgba(253,250,247,0.4); font-weight:500; padding-bottom:0.4rem; letter-spacing:0.05em;">DEBT TRACKER</div>', unsafe_allow_html=True)
     st.divider()
 
-    page = st.radio("Nav", ["Vista General", "Obligaciones", "Financiero", "Portafolio", "Monitoreo"], label_visibility="collapsed")
+    page = st.radio("Nav", ["Vista General", "Obligaciones", "Financiero", "Monitoreo"], label_visibility="collapsed")
     st.divider()
 
     total_obs_all = sum(b["total"] for b in banks)
@@ -1671,14 +1671,10 @@ elif page == "Financiero":
                     jur_items += f'<div class="info-box"><div class="ib-label">{jk.replace("_"," ").title()}</div><div class="ib-value">{jv}</div></div>'
                 st.markdown(f'<div style="background:#fff;border:1px solid var(--u-purple-15);border-radius:14px;padding:1.2rem;box-shadow:0 1px 3px rgba(44,32,57,0.04);">{jur_items}</div>', unsafe_allow_html=True)
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-# PAGE 4 — Portafolio (MOCK DATA charts)
-# ══════════════════════════════════════════════════════════════════════════════
-elif page == "Portafolio":
-
+    # ── Portafolio section (merged) ───────────────────────────────────────────
+    st.markdown('<hr style="border:none;border-top:1px solid var(--u-purple-15);margin:2rem 0;">', unsafe_allow_html=True)
     st.markdown("""
-    <div class="page-heading">Portafolio de Inversión</div>
+    <div class="page-heading" style="margin-top:0;">Portafolio de Inversión</div>
     <div class="page-subheading">Métricas consolidadas del portafolio solar y análisis de rendimiento. (Datos simulados)</div>
     """, unsafe_allow_html=True)
 
