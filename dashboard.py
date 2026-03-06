@@ -361,6 +361,56 @@ def is_upcoming_item(contract, item):
     return current <= threshold
 
 
+def compute_next_due_date(contract, item) -> str:
+    """Return the next exact due date as a short string (e.g. '15 Jul 2026').
+    Searches for explicit day-month mentions in the obligation/frequency text
+    and the contract's payment schedule; falls back to period-based calculation.
+    """
+    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
+    month_names = "|".join(SPANISH_MONTHS.keys())
+    pattern = rf'(\d{{1,2}})\s+(?:de\s+)?({month_names})'
+
+    # Look for explicit dates in: obligation text, frequency, and contract payment info
+    plazos = contract.get("plazos_y_pagos", {})
+    search_texts = [
+        item.get("obligacion", ""),
+        item.get("frecuencia", ""),
+        plazos.get("frecuencia_de_pago_intereses", ""),
+    ]
+
+    candidates = []
+    for text in search_texts:
+        for day_str, month_str in re.findall(pattern, text.lower()):
+            month_num = SPANISH_MONTHS.get(month_str)
+            if not month_num:
+                continue
+            day = int(day_str)
+            for yr in [today.year, today.year + 1]:
+                try:
+                    d = datetime(yr, month_num, day)
+                    if d >= today:
+                        candidates.append(d)
+                        break
+                except ValueError:
+                    pass
+
+    if candidates:
+        best = min(candidates)
+        return f"{best.day} {MONTH_SHORT[best.month]} {best.year}"
+
+    # Fall back: period-based from contract start date
+    days = freq_to_days(item.get("frecuencia", ""))
+    if days == 0:
+        return "Fecha puntual"
+
+    info = contract.get("informacion_del_contrato", {})
+    start = parse_contract_date(info.get("fecha_de_ejecucion", ""))
+    nxt = start + timedelta(days=days)
+    while nxt < today:
+        nxt += timedelta(days=days)
+    return f"{nxt.day} {MONTH_SHORT[nxt.month]} {nxt.year}"
+
+
 def build_calendar_data(contract, bank_idx):
     """Compute due-date milestones for obligations, grouped by month."""
     info = contract.get("informacion_del_contrato", {})
@@ -1449,7 +1499,7 @@ elif page == "Obligaciones":
                                 <span class="ob-area-tag">{area_label}</span>
                             </div>
                             <div class="ob-desc">{item.get('obligacion','')}</div>
-                            <div class="ob-freq">{item.get('frecuencia','')}&nbsp;&nbsp;·&nbsp;&nbsp;Área a cargo: {area_label}</div>
+                            <div class="ob-freq">📅 {compute_next_due_date(contract, item)}&nbsp;&nbsp;·&nbsp;&nbsp;Área a cargo: {area_label}</div>
                         </div>
                         """, unsafe_allow_html=True)
 
