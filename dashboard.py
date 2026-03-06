@@ -59,13 +59,11 @@ STATUS_META = {
 }
 
 AREA_CATEGORIES = [
-    ("contable",    "Contable"),
-    ("financiero",  "Financiero"),
-    ("legal",       "Legal"),
-    ("ambiental",   "Ambiental"),
-    ("social",      "Social"),
-    ("suministro",  "Suministro"),
-    ("operaciones", "Operaciones"),
+    ("contable",        "Contable"),
+    ("financiero",      "Financiero"),
+    ("legal",           "Legal"),
+    ("socioambiental",  "Socioambiental"),
+    ("operaciones",     "Operaciones"),
 ]
 AREA_LABEL_MAP = {key: lbl for key, lbl in AREA_CATEGORIES}
 
@@ -306,12 +304,8 @@ def assign_area(cat_key, item):
             return "financiero"
         return "contable"
     if cat_key == "obligaciones_ambientales_sociales":
-        if any(k in text for k in ["social", "comunidad", "trabajador", "laboral",
-                                    "empleo", "action plan", "esap"]):
-            return "social"
-        return "ambiental"
+        return "socioambiental"
     if cat_key == "obligaciones_operativas_legales":
-        # Legal: explicit legal/regulatory/contractual items
         legal_kw = ["legal", "judicial", "leyes", "ley ", "norma", "reglamento",
                     "autoriza", "contrato", "agreement", "trust", "security",
                     "land right", "permiso", "derecho", "objectionable",
@@ -320,7 +314,7 @@ def assign_area(cat_key, item):
         if any(k in text for k in legal_kw):
             return "legal"
         if any(k in text for k in ["suministr", "proveedor", "compra", "adquisici"]):
-            return "suministro"
+            return "socioambiental"
         return "operaciones"
     return "contable"
 
