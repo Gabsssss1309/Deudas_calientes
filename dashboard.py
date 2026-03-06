@@ -1610,66 +1610,6 @@ elif page == "Financiero":
                 else:
                     st.info("Información de prepago no disponible.")
 
-            # ── Rates ────────────────────────────────────────────────────
-            st.markdown('<div class="section-title">Tasas y Comisiones</div>', unsafe_allow_html=True)
-            tasa_data = fin.get("tasa_de_interes_ordinaria", {})
-            comisiones = fin.get("comisiones_y_cargos", {})
-
-            if isinstance(tasa_data, dict):
-                comp = tasa_data.get("componentes", tasa_data)
-                tasa_ref = comp.get("tasa_de_referencia", tasa_data.get("tasa_base", "N/A"))
-                margen_val = comp.get("margen", tasa_data.get("margen_numerico", "N/A"))
-            else:
-                tasa_ref = str(tasa_data)
-                margen_val = "N/A"
-
-            fee_val = safe_get(comisiones, "front_end_fee", "porcentaje", default=safe_get(comisiones, "comision_estructuracion", default="N/A"))
-
-            fc1, fc2, fc3, fc4 = st.columns(4)
-            with fc1:
-                st.markdown(f'<div class="metric-card"><div class="label">Tasa Base</div><div class="value">{tasa_ref}</div></div>', unsafe_allow_html=True)
-            with fc2:
-                st.markdown(f'<div class="metric-card"><div class="label">Margen</div><div class="value">{margen_val}</div></div>', unsafe_allow_html=True)
-            with fc3:
-                plazo = plazos.get("plazo_anos", "N/A")
-                st.markdown(f'<div class="metric-card"><div class="label">Plazo</div><div class="value">{plazo} años</div></div>', unsafe_allow_html=True)
-            with fc4:
-                st.markdown(f'<div class="metric-card"><div class="label">Fee Inicial</div><div class="value">{fee_val}%</div></div>', unsafe_allow_html=True)
-
-            # ── Guarantees ───────────────────────────────────────────────
-            if garantias_data:
-                st.markdown('<div class="section-title">Garantías y Seguridades</div>', unsafe_allow_html=True)
-                gitems = []
-                for gk, gv in garantias_data.items():
-                    if isinstance(gv, dict):
-                        desc = gv.get("descripcion", "")
-                        alcance = gv.get("alcance", "")
-                        full_desc = f"{desc} — {alcance}" if alcance else desc
-                        gitems.append(("", gk.replace("_", " ").title(), full_desc))
-                    elif isinstance(gv, str):
-                        gitems.append(("", gk.replace("_", " ").title(), gv))
-
-                gc1, gc2 = st.columns(2)
-                for i, (icon, title, desc) in enumerate(gitems[:6]):
-                    col = gc1 if i % 2 == 0 else gc2
-                    with col:
-                        st.markdown(f'<div class="guarantee-card"><div class="g-icon">{icon}</div><div><div class="g-title">{title}</div><div class="g-desc">{desc}</div></div></div>', unsafe_allow_html=True)
-
-            # ── Events of default ────────────────────────────────────────
-            eventos = criticas_data.get("causales_de_terminacion_eventos_de_default", [])
-            if eventos:
-                st.markdown('<div class="section-title">Eventos de Default</div>', unsafe_allow_html=True)
-                pills_h = "".join(f'<span class="event-pill">{e}</span>' for e in eventos)
-                st.markdown(f'<div style="margin-bottom:1rem;">{pills_h}</div>', unsafe_allow_html=True)
-
-            # ── Jurisdiction ─────────────────────────────────────────────
-            jur = criticas_data.get("jurisdiccion_y_ley_aplicable", {})
-            if jur:
-                st.markdown('<div class="section-title">Jurisdicción</div>', unsafe_allow_html=True)
-                jur_items = ""
-                for jk, jv in jur.items():
-                    jur_items += f'<div class="info-box"><div class="ib-label">{jk.replace("_"," ").title()}</div><div class="ib-value">{jv}</div></div>'
-                st.markdown(f'<div style="background:#fff;border:1px solid var(--u-purple-15);border-radius:14px;padding:1.2rem;box-shadow:0 1px 3px rgba(44,32,57,0.04);">{jur_items}</div>', unsafe_allow_html=True)
 
     # ── Portafolio section (merged) ───────────────────────────────────────────
     st.markdown('<hr style="border:none;border-top:1px solid var(--u-purple-15);margin:2rem 0;">', unsafe_allow_html=True)
@@ -1750,20 +1690,6 @@ elif page == "Financiero":
         st.plotly_chart(fig_cf, width="stretch", config={"displayModeBar": False})
 
     # ── Risk Score ───────────────────────────────────────────────────────
-    st.markdown('<div class="section-title">Score de Riesgo del Portafolio</div>', unsafe_allow_html=True)
-
-    score = mock["riesgo_score"]
-    score_color = "#16a34a" if score < 35 else ("#f59e0b" if score < 65 else "#ef4444")
-    score_label = "BAJO" if score < 35 else ("MEDIO" if score < 65 else "ALTO")
-
-    st.markdown(f"""
-    <div style="background:#fff; border:1px solid var(--u-purple-15); border-radius:16px; padding:2rem; text-align:center; box-shadow:0 2px 8px rgba(44,32,57,0.06);">
-        <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.08em; color:#374151; font-weight:700; margin-bottom:0.5rem;">Score de Riesgo Consolidado</div>
-        <div style="font-family:'Poppins',sans-serif; font-size:4rem; font-weight:800; color:{score_color}; line-height:1;">{score}</div>
-        <div style="display:inline-block; padding:0.25rem 1rem; border-radius:20px; background:{score_color}15; color:{score_color}; font-weight:700; font-size:0.78rem; margin-top:0.3rem;">{score_label}</div>
-        <div style="font-size:0.7rem; color:#6b7280; margin-top:0.5rem;">0 = Sin riesgo · 100 = Riesgo máximo</div>
-    </div>
-    """, unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
