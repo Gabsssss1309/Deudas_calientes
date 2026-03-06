@@ -703,6 +703,14 @@ div[data-testid="stPills"] button[aria-pressed="true"] {
 [data-testid="stMain"] [data-testid="stRadio"] label > div:first-child {
     display: none !important;
 }
+/* Force black text on unselected area pills */
+[data-testid="stMain"] [data-testid="stRadio"] label span {
+    color: #2C2039 !important;
+}
+/* Hide the radio group label ("Área") — it renders as a pill due to our CSS */
+[data-testid="stMain"] [data-testid="stRadio"] [data-testid="stWidgetLabel"] {
+    display: none !important;
+}
 
 /* ── Summary chips ───────────────────────────────── */
 .summary-row { display: flex; gap: 0.45rem; flex-wrap: wrap; align-items: center; margin-bottom: 0.8rem; }
@@ -1425,11 +1433,12 @@ elif page == "Obligaciones":
                         """, unsafe_allow_html=True)
 
                     with c_file:
-                        st.markdown('<div class="ob-file-label">Soporte de la tarea</div>',
+                        st.markdown('<div class="ob-file-label">Link de soporte</div>',
                                     unsafe_allow_html=True)
-                        st.file_uploader(
-                            "Soporte",
-                            key=f"file_{sk}",
+                        st.text_input(
+                            "Link",
+                            placeholder="https://...",
+                            key=f"link_{sk}",
                             label_visibility="collapsed",
                         )
 
