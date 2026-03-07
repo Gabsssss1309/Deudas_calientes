@@ -391,12 +391,12 @@ def compute_next_due_date(contract, item) -> str:
     month_names = "|".join(SPANISH_MONTHS.keys())
     pattern = rf'(\d{{1,2}})\s+(?:de\s+)?({month_names})'
 
-    # 1. Search for explicit day-month dates in relevant texts
-    plazos = contract.get("plazos_y_pagos", {})
+    # 1. Search for explicit day-month dates in the item's own texts only
+    #    (contract-level payment dates are intentionally excluded so they don't
+    #    bleed into obligations that have nothing to do with interest payments)
     search_texts = [
         item.get("obligacion", ""),
         item.get("frecuencia", ""),
-        plazos.get("frecuencia_de_pago_intereses", ""),
     ]
     candidates = []
     for text in search_texts:
@@ -441,49 +441,90 @@ def compute_next_due_date(contract, item) -> str:
 
 
 def build_calendar_data(contract, bank_idx):
-    """Compute due-date milestones for obligations, grouped by month."""
+    """Compute due-date milestones for obligations, grouped by month.
+    Uses proper calendar-month arithmetic (same logic as compute_next_due_date).
+    """
     info = contract.get("informacion_del_contrato", {})
     start_date = parse_contract_date(info.get("fecha_de_ejecucion", ""))
     resp = contract.get("responsabilidades", {})
-    today = datetime.now()
+    today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     end_window = today + timedelta(days=365)
     milestones = []
 
+    month_names = "|".join(SPANISH_MONTHS.keys())
+    explicit_pattern = rf'(\d{{1,2}})\s+(?:de\s+)?({month_names})'
+
     for cat_key, items in resp.items():
         for item in items:
-            freq = item.get("frecuencia", "mensual")
-            sev = item.get("severidad", "media")
+            freq  = item.get("frecuencia", "mensual")
+            sev   = item.get("severidad", "media")
             color = risk_to_calendar_color(sev)
-            days = freq_to_days(freq)
-            label = item.get("obligacion", "")[:55]
+            label = item.get("obligacion", "")[:60]
 
-            if days == 0:
-                if start_date >= today - timedelta(days=30) and start_date <= end_window:
-                    milestones.append({"date": start_date, "label": label, "color": color})
-            else:
-                current = start_date + timedelta(days=days)
+            # Check for explicit calendar dates in item texts only
+            candidates = []
+            for text in [item.get("obligacion", ""), freq]:
+                for day_str, month_str in re.findall(explicit_pattern, text.lower()):
+                    mnum = SPANISH_MONTHS.get(month_str)
+                    if not mnum:
+                        continue
+                    day = int(day_str)
+                    for yr in [today.year, today.year + 1, today.year + 2]:
+                        try:
+                            d = datetime(yr, mnum, day)
+                            if today - timedelta(days=15) <= d <= end_window:
+                                candidates.append(d)
+                                break
+                        except ValueError:
+                            pass
+
+            if candidates:
+                for d in candidates:
+                    milestones.append({"date": d, "label": label, "color": color, "sev": sev})
+                continue
+
+            # Calendar-month arithmetic
+            period_months = _freq_to_months(freq)
+            if period_months is not None:
+                nxt = _add_months(start_date, period_months)
                 added = 0
-                while current <= end_window and added < 15:
-                    if current >= today - timedelta(days=15):
-                        milestones.append({"date": current, "label": label, "color": color})
+                while nxt <= end_window and added < 4:
+                    if nxt >= today - timedelta(days=15):
+                        milestones.append({"date": nxt, "label": label, "color": color, "sev": sev})
                         added += 1
-                    current += timedelta(days=days)
+                    nxt = _add_months(nxt, period_months)
+                continue
+
+            # Day-based fallback
+            days_val = freq_to_days(freq)
+            if days_val == 0:
+                if today - timedelta(days=30) <= start_date <= end_window:
+                    milestones.append({"date": start_date, "label": label, "color": color, "sev": sev})
+                continue
+            nxt = start_date + timedelta(days=days_val)
+            added = 0
+            while nxt <= end_window and added < 4:
+                if nxt >= today - timedelta(days=15):
+                    milestones.append({"date": nxt, "label": label, "color": color, "sev": sev})
+                    added += 1
+                nxt += timedelta(days=days_val)
 
     # Group by month key
     months_data = {}
     for m in milestones:
         mk = m["date"].strftime("%Y-%m")
         months_data.setdefault(mk, []).append(m)
+    for mk in months_data:
+        months_data[mk].sort(key=lambda x: x["date"])
 
-    # Generate 12 month keys
+    # Only months that have at least one event, next 12 months
     month_keys = []
-    for i in range(12):
-        d = today.replace(day=1) + timedelta(days=i * 32)
-        d = d.replace(day=1)
+    for i in range(13):
+        d = _add_months(today.replace(day=1), i)
         mk = d.strftime("%Y-%m")
         if mk not in month_keys:
             month_keys.append(mk)
-    return month_keys[:12], months_data
+    return month_keys[:13], months_data
 
 
 # ── Solarview data helpers ──────────────────────────────────────────────────
@@ -1589,31 +1630,68 @@ elif page == "Obligaciones":
 
             month_keys, months_data = build_calendar_data(contract, bank_idx)
 
-            cal_months_html = ""
+            SEV_LABEL = {"critica": "Crítica", "alta": "Alta", "media": "Media", "baja": "Baja"}
+            SEV_BG    = {"critica": "#fee2e2", "alta": "#fef3c7", "media": "#ede9fe", "baja": "#dcfce7"}
+            SEV_TEXT  = {"critica": "#991b1b", "alta": "#92400e", "media": "#5b21b6", "baja": "#166534"}
+
+            timeline_html = ""
             for mk in month_keys:
+                events = months_data.get(mk, [])
+                if not events:
+                    continue
                 year, mon = mk.split("-")
                 month_label = f"{MONTH_SHORT[int(mon)]} {year}"
-                dots = months_data.get(mk, [])
-                dots_html = ""
-                for d in dots[:20]:
-                    day_str = d["date"].strftime("%d %b")
-                    tooltip  = f'{day_str}: {d["label"]}'
-                    dots_html += (f'<span class="cal-dot" style="background:{d["color"]};"'
-                                  f' title="{tooltip}"></span>')
-                count = len(dots)
-                cal_months_html += f"""
-                <div class="cal-month">
-                    <div class="cal-month-name">{month_label}</div>
-                    <div class="cal-dots">{dots_html}</div>
-                    <div class="cal-count">{count} entrega{"s" if count != 1 else ""}</div>
+                total = len(events)
+                # header bar color: red if any critica, amber if any alta, else purple
+                sevs = [e.get("sev","media") for e in events]
+                hdr_color = "#ef4444" if "critica" in sevs else ("#f59e0b" if "alta" in sevs else "#915BD8")
+
+                rows_html = ""
+                for ev in events:
+                    day_num  = ev["date"].day
+                    sev_key  = ev.get("sev", "media")
+                    badge_bg = SEV_BG.get(sev_key, "#ede9fe")
+                    badge_tx = SEV_TEXT.get(sev_key, "#5b21b6")
+                    sev_lbl  = SEV_LABEL.get(sev_key, sev_key.title())
+                    rows_html += f"""
+                    <div style="display:flex;align-items:center;gap:0.75rem;padding:0.45rem 0;
+                                border-bottom:1px solid var(--u-purple-10);">
+                        <div style="min-width:2.2rem;height:2.2rem;border-radius:50%;
+                                    background:{ev['color']}20;border:2px solid {ev['color']};
+                                    display:flex;align-items:center;justify-content:center;
+                                    font-family:'Poppins',sans-serif;font-size:0.78rem;
+                                    font-weight:800;color:{ev['color']};flex-shrink:0;">{day_num}</div>
+                        <div style="flex:1;font-size:0.72rem;color:#374151;line-height:1.35;">{ev['label']}</div>
+                        <div style="padding:0.18rem 0.55rem;border-radius:12px;font-size:0.62rem;
+                                    font-weight:700;background:{badge_bg};color:{badge_tx};
+                                    white-space:nowrap;flex-shrink:0;">{sev_lbl}</div>
+                    </div>"""
+
+                timeline_html += f"""
+                <div style="background:#fff;border:1px solid var(--u-purple-15);border-radius:16px;
+                            overflow:hidden;box-shadow:0 2px 8px rgba(44,32,57,0.05);margin-bottom:1rem;">
+                    <div style="background:{hdr_color};padding:0.55rem 1rem;
+                                display:flex;align-items:center;justify-content:space-between;">
+                        <span style="font-family:'Poppins',sans-serif;font-size:0.88rem;
+                                     font-weight:800;color:#fff;letter-spacing:0.02em;">{month_label}</span>
+                        <span style="background:rgba(255,255,255,0.25);color:#fff;font-size:0.68rem;
+                                     font-weight:700;padding:0.15rem 0.6rem;border-radius:20px;">
+                            {total} entrega{"s" if total != 1 else ""}
+                        </span>
+                    </div>
+                    <div style="padding:0.25rem 1rem 0.5rem;">{rows_html}</div>
                 </div>"""
 
+            if not timeline_html:
+                timeline_html = '<div style="color:#94a3b8;font-size:0.8rem;padding:1rem;">Sin entregas programadas en los próximos 12 meses.</div>'
+
             st.markdown(f"""
-            <div class="cal-grid">{cal_months_html}</div>
-            <div class="cal-legend">
-                <span><span class="cal-legend-dot" style="background:#ef4444;"></span> Alto</span>
-                <span><span class="cal-legend-dot" style="background:#f59e0b;"></span> Medio</span>
-                <span><span class="cal-legend-dot" style="background:#22c55e;"></span> Bajo</span>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0.75rem;margin-top:0.5rem;">
+            {timeline_html}
+            </div>
+            <div style="display:flex;gap:1.2rem;margin-top:0.75rem;font-size:0.7rem;font-weight:700;color:#374151;">
+                <span>🔴 Crítica</span><span>🟡 Alta</span>
+                <span style="color:#915BD8;">🟣 Media</span><span>🟢 Baja</span>
             </div>
             """, unsafe_allow_html=True)
 
