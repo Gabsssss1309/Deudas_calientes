@@ -699,8 +699,12 @@ def fetch_financial_data_from_sheets(bank_name):
         }
     }
     
-    if not HAS_PANDAS or bank_name not in SHEETS_MAP:
-        # Retorna data simulada si no hay pandas o el sheet no está mapeado
+    if not HAS_PANDAS:
+        st.error("🚨 Error crítico: Pandas no está instalado en este entorno (Streamlit Cloud). Revisar requirements.txt")
+        return financial_data
+        
+    if bank_name not in SHEETS_MAP:
+        st.info(f"ℹ️ El banco '{bank_name}' no tiene una hoja de Google Sheets vinculada. Mostrando valores por defecto 0.0.")
         return financial_data
         
     config = SHEETS_MAP[bank_name]
@@ -823,8 +827,9 @@ def fetch_financial_data_from_sheets(bank_name):
             financial_data["historico_dscr"] = cf_dscr[:len(financial_data["cashflow"]["labels"])]
             
     except Exception as e:
-        print(f"Error parseando Sheet de {bank_name}: {e}")
-        pass
+        import traceback
+        st.error(f"⚠️ Error procesando Sheet de {bank_name}: {e}")
+        st.expander("Ver detalles técnicos del error (Traceback)").code(traceback.format_exc())
         
     return financial_data
 
