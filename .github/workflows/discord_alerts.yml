@@ -2,7 +2,7 @@ name: Unergy — Discord Obligation Alerts
 
 on:
   schedule:
-    - cron: "7 2 * * *"   # 9:00 AM Colombia (UTC-5 = 14:00 UTC)
+    - cron: "10 2 * * *"   # 9:00 AM Colombia (UTC-5 = 14:00 UTC)
   workflow_dispatch:        # Permite correrlo manualmente desde GitHub
 
 jobs:
