@@ -1378,44 +1378,6 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-    st.divider()
-
-    # ── Solarview API config ──────────────────────────────────────────────
-    with st.expander("Configuración API", expanded=False):
-        token_input = st.text_input(
-            "Token Solarview",
-            value=st.session_state.solarview_token or "",
-            type="password",
-            help="Token de autenticación para data.solenium.co",
-            key="sv_token_input",
-        )
-        if token_input:
-            st.session_state.solarview_token = token_input
-        elif st.session_state.solarview_token and not token_input:
-            pass  # Keep existing token
-
-    st.divider()
-
-    # ── + Agregar Banco ────────────────────────────────────────────────────
-    st.markdown('<div style="font-size:0.72rem; font-weight:700; color:rgba(253,250,247,0.7); margin-bottom:0.3rem;">Agregar Nuevo Banco</div>', unsafe_allow_html=True)
-    uploaded = st.file_uploader("Subir contrato (JSON)", type=["json"], key="upload_contract", label_visibility="collapsed")
-    if uploaded is not None:
-        try:
-            new_data = json.loads(uploaded.read().decode("utf-8"))
-            required_keys = ["informacion_del_contrato", "partes_involucradas", "responsabilidades"]
-            if all(k in new_data for k in required_keys):
-                st.session_state.contracts.append(new_data)
-                bidx = len(st.session_state.contracts) - 1
-                resp = new_data.get("responsabilidades", {})
-                for cat_key, items in resp.items():
-                    for idx in range(len(items)):
-                        st.session_state.obligation_statuses[f"{bidx}_{cat_key}_{idx}"] = "Pendiente"
-                st.success(f"Banco agregado: {get_bank_display_name(new_data)}")
-                st.rerun()
-            else:
-                st.error("JSON inválido. Faltan claves requeridas.")
-        except json.JSONDecodeError:
-            st.error("Archivo JSON no válido.")
 
     st.markdown('<div style="text-align:center; padding:1rem 0 0.3rem; font-size:0.55rem; color:rgba(253,250,247,0.3);">Solo informativo · No asesoría legal</div>', unsafe_allow_html=True)
 
@@ -1530,7 +1492,7 @@ if page == "Vista General":
                 if not bank_proj_data:
                     bank_proj_data = generate_solarview_mock(bank_projects_vg, vg_scale_val)
                     if not token_vg:
-                        st.caption("Datos simulados — configure el Token Solarview en Configuración API.")
+                        st.caption("Datos simulados — Token Solarview no configurado.")
 
                 # KPIs del banco
                 bank_gen_total = sum(
@@ -1752,18 +1714,23 @@ elif page == "Obligaciones":
     transition: all 0.2s ease !important;
 }}
 #{uid} + [data-testid="stHorizontalBlock"] button[kind="secondary"] {{
-    background: #fff !important;
-    border: 1.5px solid var(--u-purple-15) !important;
-    color: var(--u-deep) !important;
-    box-shadow: 0 1px 4px rgba(44,32,57,0.05) !important;
+    background: #2C2039 !important;
+    border: 1.5px solid #915BD8 !important;
+    color: #FDFAF7 !important;
+    box-shadow: 0 1px 4px rgba(44,32,57,0.15) !important;
 }}
 #{uid} + [data-testid="stHorizontalBlock"] button[kind="secondary"]:hover {{
-    border-color: var(--u-purple) !important;
-    box-shadow: 0 3px 12px rgba(145,91,216,0.15) !important;
+    background: #3a2a4d !important;
+    border-color: #F6FF72 !important;
+    box-shadow: 0 3px 12px rgba(145,91,216,0.25) !important;
     transform: translateY(-1px) !important;
 }}
 #{uid} + [data-testid="stHorizontalBlock"] button[kind="primary"] {{
+    background: #915BD8 !important;
+    border: 1.5px solid #F6FF72 !important;
+    color: #FDFAF7 !important;
     font-weight: 800 !important;
+    box-shadow: 0 3px 14px rgba(145,91,216,0.4) !important;
 }}
 </style><div id="{uid}"></div>""", unsafe_allow_html=True)
 
