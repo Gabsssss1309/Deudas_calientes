@@ -285,11 +285,14 @@ def freq_to_days(freq_str):
 
 
 def risk_to_calendar_color(severidad):
-    if severidad in ("critica", "alta"):
-        return "#ef4444"
+    """Map severity to Unergy brand colour for day-circle accents."""
+    if severidad == "critica":
+        return "#2C2039"   # Púrpura Profundo — most severe
+    if severidad == "alta":
+        return "#915BD8"   # Púrpura Enérgico — high priority
     if severidad == "media":
-        return "#f59e0b"
-    return "#22c55e"
+        return "#B48DD9"   # Tint del púrpura — medium
+    return "#D9CCF0"       # Tint muy suave — low priority
 
 
 def assign_area(cat_key, item):
@@ -1717,8 +1720,9 @@ elif page == "Obligaciones":
             month_keys, months_data = build_calendar_data(contract, bank_idx)
 
             SEV_LABEL = {"critica": "Crítica", "alta": "Alta", "media": "Media", "baja": "Baja"}
-            SEV_BG    = {"critica": "#fee2e2", "alta": "#fef3c7", "media": "#ede9fe", "baja": "#dcfce7"}
-            SEV_TEXT  = {"critica": "#991b1b", "alta": "#92400e", "media": "#5b21b6", "baja": "#166534"}
+            # Badge colours — all within the Unergy brand palette
+            SEV_BG    = {"critica": "#EAE6ED", "alta": "#EDE4F9", "media": "#F4EFF9", "baja": "#FAFFD0"}
+            SEV_TEXT  = {"critica": "#2C2039", "alta": "#6B3FAE", "media": "#915BD8", "baja": "#2C2039"}
 
             timeline_html = ""
             for mk in month_keys:
@@ -1728,9 +1732,13 @@ elif page == "Obligaciones":
                 year, mon = mk.split("-")
                 month_label = f"{MONTH_SHORT[int(mon)]} {year}"
                 total = len(events)
-                # header bar color: red if any critica, amber if any alta, else purple
+                # Header bar: brand colours by highest severity in month
                 sevs = [e.get("sev","media") for e in events]
-                hdr_color = "#ef4444" if "critica" in sevs else ("#f59e0b" if "alta" in sevs else "#915BD8")
+                hdr_color = (
+                    "#2C2039" if "critica" in sevs else   # Púrpura Profundo
+                    "#915BD8" if "alta"    in sevs else   # Púrpura Enérgico
+                    "#B48DD9"                              # Tint suave
+                )
 
                 rows_html = ""
                 for ev in events:
@@ -1768,9 +1776,11 @@ elif page == "Obligaciones":
                 timeline_html = '<div style="color:#94a3b8;font-size:0.8rem;padding:1rem;">Sin entregas programadas en los próximos 12 meses.</div>'
 
             legend = (
-                '<div style="display:flex;gap:1.2rem;margin-top:0.75rem;font-size:0.7rem;font-weight:700;color:#374151;">'
-                '<span>🔴 Crítica</span><span>🟡 Alta</span>'
-                '<span style="color:#915BD8;">🟣 Media</span><span>🟢 Baja</span>'
+                '<div style="display:flex;gap:0.75rem;margin-top:0.75rem;flex-wrap:wrap;">'
+                '<span style="background:#2C2039;color:#FDFAF7;font-size:0.65rem;font-weight:700;padding:0.2rem 0.65rem;border-radius:20px;">● Crítica</span>'
+                '<span style="background:#915BD8;color:#FDFAF7;font-size:0.65rem;font-weight:700;padding:0.2rem 0.65rem;border-radius:20px;">● Alta</span>'
+                '<span style="background:#B48DD9;color:#FDFAF7;font-size:0.65rem;font-weight:700;padding:0.2rem 0.65rem;border-radius:20px;">● Media</span>'
+                '<span style="background:#D9CCF0;color:#2C2039;font-size:0.65rem;font-weight:700;padding:0.2rem 0.65rem;border-radius:20px;">● Baja</span>'
                 '</div>'
             )
             grid_html = (
