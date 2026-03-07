@@ -1,0 +1,25 @@
+name: Unergy — Discord Obligation Alerts
+
+on:
+  schedule:
+    - cron: "21 2 * * *"   # 9:00 AM Colombia (UTC-5 = 14:00 UTC)
+  workflow_dispatch:        # Permite correrlo manualmente desde GitHub
+
+jobs:
+  send-alerts:
+    name: Check due dates and send Discord alerts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run alert dispatcher
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: python discord_alerts.py
