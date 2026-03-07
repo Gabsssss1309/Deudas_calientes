@@ -325,6 +325,21 @@ def run(test_mode: bool = False) -> None:
         if test_mode and total_sent > 0:
             break  # one test message is enough
 
+    # Always send a daily heartbeat so the team knows the bot ran
+    if total_sent == 0:
+        heartbeat = {
+            "title": "✅ Sin alertas pendientes hoy",
+            "description": (
+                f"El bot revisó todas las obligaciones el **{TODAY.strftime('%d/%m/%Y')}** "
+                f"y no hay vencimientos próximos que requieran notificación."
+            ),
+            "color": 0x2C2039,
+            "footer": {"text": "Unergy Debt Tracker · Revisión diaria"},
+            "timestamp": datetime.utcnow().isoformat() + "Z",
+        }
+        send_embed(heartbeat)
+        print("  → Heartbeat enviado (sin alertas hoy)")
+
     print(f"\n{'─'*50}")
     print(f"✅  {total_sent} alert(s) dispatched for {TODAY.date()}")
 
