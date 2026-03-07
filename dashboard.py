@@ -1739,47 +1739,45 @@ elif page == "Obligaciones":
                     badge_bg = SEV_BG.get(sev_key, "#ede9fe")
                     badge_tx = SEV_TEXT.get(sev_key, "#5b21b6")
                     sev_lbl  = SEV_LABEL.get(sev_key, sev_key.title())
-                    rows_html += f"""
-                    <div style="display:flex;align-items:center;gap:0.75rem;padding:0.45rem 0;
-                                border-bottom:1px solid var(--u-purple-10);">
-                        <div style="min-width:2.2rem;height:2.2rem;border-radius:50%;
-                                    background:{ev['color']}20;border:2px solid {ev['color']};
-                                    display:flex;align-items:center;justify-content:center;
-                                    font-family:'Poppins',sans-serif;font-size:0.78rem;
-                                    font-weight:800;color:{ev['color']};flex-shrink:0;">{day_num}</div>
-                        <div style="flex:1;font-size:0.72rem;color:#374151;line-height:1.35;">{ev['label']}</div>
-                        <div style="padding:0.18rem 0.55rem;border-radius:12px;font-size:0.62rem;
-                                    font-weight:700;background:{badge_bg};color:{badge_tx};
-                                    white-space:nowrap;flex-shrink:0;">{sev_lbl}</div>
-                    </div>"""
+                    c = ev['color']
+                    lbl = ev['label']
+                    rows_html += (
+                        f'<div style="display:flex;align-items:center;gap:0.75rem;padding:0.45rem 0;border-bottom:1px solid #e5e7eb;">'
+                        f'<div style="min-width:2.2rem;height:2.2rem;border-radius:50%;background:{c}20;border:2px solid {c};'
+                        f'display:flex;align-items:center;justify-content:center;font-family:Poppins,sans-serif;'
+                        f'font-size:0.78rem;font-weight:800;color:{c};flex-shrink:0;">{day_num}</div>'
+                        f'<div style="flex:1;font-size:0.72rem;color:#374151;line-height:1.35;">{lbl}</div>'
+                        f'<div style="padding:0.18rem 0.55rem;border-radius:12px;font-size:0.62rem;'
+                        f'font-weight:700;background:{badge_bg};color:{badge_tx};white-space:nowrap;flex-shrink:0;">{sev_lbl}</div>'
+                        f'</div>'
+                    )
 
-                timeline_html += f"""
-                <div style="background:#fff;border:1px solid var(--u-purple-15);border-radius:16px;
-                            overflow:hidden;box-shadow:0 2px 8px rgba(44,32,57,0.05);margin-bottom:1rem;">
-                    <div style="background:{hdr_color};padding:0.55rem 1rem;
-                                display:flex;align-items:center;justify-content:space-between;">
-                        <span style="font-family:'Poppins',sans-serif;font-size:0.88rem;
-                                     font-weight:800;color:#fff;letter-spacing:0.02em;">{month_label}</span>
-                        <span style="background:rgba(255,255,255,0.25);color:#fff;font-size:0.68rem;
-                                     font-weight:700;padding:0.15rem 0.6rem;border-radius:20px;">
-                            {total} entrega{"s" if total != 1 else ""}
-                        </span>
-                    </div>
-                    <div style="padding:0.25rem 1rem 0.5rem;">{rows_html}</div>
-                </div>"""
+                s_label = f'{total} entrega{"s" if total != 1 else ""}'
+                timeline_html += (
+                    f'<div style="background:#fff;border:1px solid #e5e7eb;border-radius:16px;'
+                    f'overflow:hidden;box-shadow:0 2px 8px rgba(44,32,57,0.05);margin-bottom:1rem;">'
+                    f'<div style="background:{hdr_color};padding:0.55rem 1rem;display:flex;align-items:center;justify-content:space-between;">'
+                    f'<span style="font-family:Poppins,sans-serif;font-size:0.88rem;font-weight:800;color:#fff;letter-spacing:0.02em;">{month_label}</span>'
+                    f'<span style="background:rgba(255,255,255,0.25);color:#fff;font-size:0.68rem;font-weight:700;padding:0.15rem 0.6rem;border-radius:20px;">{s_label}</span>'
+                    f'</div>'
+                    f'<div style="padding:0.25rem 1rem 0.5rem;">{rows_html}</div>'
+                    f'</div>'
+                )
 
             if not timeline_html:
                 timeline_html = '<div style="color:#94a3b8;font-size:0.8rem;padding:1rem;">Sin entregas programadas en los próximos 12 meses.</div>'
 
-            st.markdown(f"""
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0.75rem;margin-top:0.5rem;">
-            {timeline_html}
-            </div>
-            <div style="display:flex;gap:1.2rem;margin-top:0.75rem;font-size:0.7rem;font-weight:700;color:#374151;">
-                <span>🔴 Crítica</span><span>🟡 Alta</span>
-                <span style="color:#915BD8;">🟣 Media</span><span>🟢 Baja</span>
-            </div>
-            """, unsafe_allow_html=True)
+            legend = (
+                '<div style="display:flex;gap:1.2rem;margin-top:0.75rem;font-size:0.7rem;font-weight:700;color:#374151;">'
+                '<span>🔴 Crítica</span><span>🟡 Alta</span>'
+                '<span style="color:#915BD8;">🟣 Media</span><span>🟢 Baja</span>'
+                '</div>'
+            )
+            grid_html = (
+                '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));'
+                f'gap:0.75rem;margin-top:0.5rem;">{timeline_html}</div>{legend}'
+            )
+            st.markdown(grid_html, unsafe_allow_html=True)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
