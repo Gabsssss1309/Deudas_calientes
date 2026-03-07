@@ -259,8 +259,11 @@ def build_embed(contract: dict, item: dict, due_date: datetime, alert_num: int) 
 
 def send_embed(embed: dict) -> None:
     if not WEBHOOK_URL:
-        print("  [WARN] DISCORD_WEBHOOK_URL not set — message not sent")
+        print("  [ERROR] DISCORD_WEBHOOK_URL no está configurado — revisa el secret en GitHub")
         return
+    # Show masked URL for diagnostics (never logs full token)
+    masked = WEBHOOK_URL[:40] + "..." if len(WEBHOOK_URL) > 40 else WEBHOOK_URL
+    print(f"  → Enviando a: {masked}")
     payload = json.dumps({"embeds": [embed]}).encode("utf-8")
     req = urllib.request.Request(
         WEBHOOK_URL,
@@ -270,9 +273,10 @@ def send_embed(embed: dict) -> None:
     )
     try:
         with urllib.request.urlopen(req) as resp:
-            print(f"  → Sent  HTTP {resp.status}")
+            print(f"  → OK  HTTP {resp.status}")
     except urllib.error.HTTPError as e:
-        print(f"  → ERROR HTTP {e.code}: {e.read().decode()}")
+        body = e.read().decode()
+        print(f"  → ERROR HTTP {e.code}: {body}")
 
 
 # ── Main ──────────────────────────────────────────────────────────────────────
