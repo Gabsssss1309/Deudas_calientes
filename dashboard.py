@@ -355,23 +355,49 @@ def is_upcoming_item(contract, item):
     return current <= threshold
 
 
+def _add_months(dt: datetime, months: int) -> datetime:
+    """Add an exact number of calendar months, clamping day to month-end if needed."""
+    import calendar
+    m = dt.month - 1 + months
+    year = dt.year + m // 12
+    month = m % 12 + 1
+    day = min(dt.day, calendar.monthrange(year, month)[1])
+    return datetime(year, month, day)
+
+
+def _freq_to_months(freq_str: str):
+    """Return period in calendar months, or None if frequency isn't month-based."""
+    f = freq_str.lower()
+    if "mensual" in f:                                          return 1
+    if "bimestral" in f or "bimensual" in f:                   return 2
+    if "trimestral" in f or "cada 3 meses" in f:               return 3
+    if "cuatrimestral" in f or "cada 4 meses" in f:            return 4
+    if "semestral" in f or "cada 6 meses" in f \
+            or "fecha de cálculo" in f:                         return 6
+    if "anual" in f or "annual" in f:                          return 12
+    return None
+
+
 def compute_next_due_date(contract, item) -> str:
     """Return the next exact due date as a short string (e.g. '15 Jul 2026').
-    Searches for explicit day-month mentions in the obligation/frequency text
-    and the contract's payment schedule; falls back to period-based calculation.
+
+    Priority:
+    1. Explicit day+month mentioned in the obligation text, frecuencia, or
+       the contract's frecuencia_de_pago_intereses.
+    2. Calendar-month arithmetic from the contract signing date (27 oct 2025).
+    3. Day-based arithmetic for weekly / fortnightly / event-driven items.
     """
     today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     month_names = "|".join(SPANISH_MONTHS.keys())
     pattern = rf'(\d{{1,2}})\s+(?:de\s+)?({month_names})'
 
-    # Look for explicit dates in: obligation text, frequency, and contract payment info
+    # 1. Search for explicit day-month dates in relevant texts
     plazos = contract.get("plazos_y_pagos", {})
     search_texts = [
         item.get("obligacion", ""),
         item.get("frecuencia", ""),
         plazos.get("frecuencia_de_pago_intereses", ""),
     ]
-
     candidates = []
     for text in search_texts:
         for day_str, month_str in re.findall(pattern, text.lower()):
@@ -387,18 +413,27 @@ def compute_next_due_date(contract, item) -> str:
                         break
                 except ValueError:
                     pass
-
     if candidates:
         best = min(candidates)
         return f"{best.day} {MONTH_SHORT[best.month]} {best.year}"
 
-    # Fall back: period-based from contract start date
-    days = freq_to_days(item.get("frecuencia", ""))
-    if days == 0:
-        return "Fecha puntual"
-
+    # Anchor: contract signing date (e.g. 27 oct 2025)
     info = contract.get("informacion_del_contrato", {})
     start = parse_contract_date(info.get("fecha_de_ejecucion", ""))
+    freq_text = item.get("frecuencia", "")
+
+    # 2. Calendar-month arithmetic (exact months from signing date)
+    period_months = _freq_to_months(freq_text)
+    if period_months is not None:
+        nxt = _add_months(start, period_months)
+        while nxt < today:
+            nxt = _add_months(nxt, period_months)
+        return f"{nxt.day} {MONTH_SHORT[nxt.month]} {nxt.year}"
+
+    # 3. Day-based fallback (weekly, fortnightly, event-driven)
+    days = freq_to_days(freq_text)
+    if days == 0:
+        return "Fecha puntual"
     nxt = start + timedelta(days=days)
     while nxt < today:
         nxt += timedelta(days=days)
