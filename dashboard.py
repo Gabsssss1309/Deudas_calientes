@@ -1986,10 +1986,10 @@ elif page == "Financiero":
                 cf_data = real_data["cashflow"]
                 cf_labels = cf_data["labels"]
                 fig_cf = go.Figure()
-                fig_cf.add_trace(go.Bar(x=cf_labels, y=[v/1e6 for v in cf_data["ingresos"]], name="Ingresos PPA", marker_color=PURPLE))
-                fig_cf.add_trace(go.Bar(x=cf_labels, y=[-v/1e6 for v in cf_data["opex"]], name="OPEX", marker_color="#ef4444"))
-                fig_cf.add_trace(go.Bar(x=cf_labels, y=[-v/1e6 for v in cf_data["ds"]], name="Servicio Deuda", marker_color="#f59e0b"))
-                fig_cf.add_trace(go.Scatter(x=cf_labels, y=[v/1e6 for v in cf_data["fcl"]], name="FCL", line=dict(color=SOLAR_YELLOW, width=3), mode="lines+markers"))
+                fig_cf.add_trace(go.Bar(x=cf_labels, y=[v/1e6 for v in cf_data["ingresos"]], name="Ingresos PPA", marker_color="#915BD8"))
+                fig_cf.add_trace(go.Bar(x=cf_labels, y=[-v/1e6 for v in cf_data["opex"]], name="OPEX", marker_color="#2C2039"))
+                fig_cf.add_trace(go.Bar(x=cf_labels, y=[-v/1e6 for v in cf_data["ds"]], name="Servicio Deuda", marker_color="#C9ABEF"))
+                fig_cf.add_trace(go.Scatter(x=cf_labels, y=[v/1e6 for v in cf_data["fcl"]], name="FCL", line=dict(color="#F6FF72", width=3), mode="lines+markers"))
                 fig_cf.update_layout(
                     barmode="relative", plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
                     font=dict(family="Lato, sans-serif", size=11, color="#000000"),
