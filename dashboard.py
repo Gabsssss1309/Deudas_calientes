@@ -1714,18 +1714,23 @@ elif page == "Obligaciones":
     transition: all 0.2s ease !important;
 }}
 #{uid} + [data-testid="stHorizontalBlock"] button[kind="secondary"] {{
-    background: #fff !important;
-    border: 1.5px solid var(--u-purple-15) !important;
-    color: var(--u-deep) !important;
-    box-shadow: 0 1px 4px rgba(44,32,57,0.05) !important;
+    background: #2C2039 !important;
+    border: 1.5px solid #915BD8 !important;
+    color: #FDFAF7 !important;
+    box-shadow: 0 1px 4px rgba(44,32,57,0.15) !important;
 }}
 #{uid} + [data-testid="stHorizontalBlock"] button[kind="secondary"]:hover {{
-    border-color: var(--u-purple) !important;
-    box-shadow: 0 3px 12px rgba(145,91,216,0.15) !important;
+    background: #3a2a4d !important;
+    border-color: #F6FF72 !important;
+    box-shadow: 0 3px 12px rgba(145,91,216,0.25) !important;
     transform: translateY(-1px) !important;
 }}
 #{uid} + [data-testid="stHorizontalBlock"] button[kind="primary"] {{
+    background: #915BD8 !important;
+    border: 1.5px solid #F6FF72 !important;
+    color: #FDFAF7 !important;
     font-weight: 800 !important;
+    box-shadow: 0 3px 14px rgba(145,91,216,0.4) !important;
 }}
 </style><div id="{uid}"></div>""", unsafe_allow_html=True)
 
