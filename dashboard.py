@@ -7,6 +7,12 @@ from pathlib import Path
 from datetime import datetime, timedelta
 
 try:
+    import pandas as pd
+    HAS_PANDAS = True
+except ImportError:
+    HAS_PANDAS = False
+
+try:
     from supabase import create_client
     HAS_SUPABASE = True
 except ImportError:
@@ -654,29 +660,174 @@ def generate_solarview_mock(projects, scale="month"):
     return result
 
 
-def generate_cashflow_mock(mw_capacity, months=12):
-    random.seed(42)
-    base = mw_capacity * 145_000
-    labels = list(MONTH_SHORT.values())[:months]
-    sf = [1.12, 1.08, 0.95, 0.88, 0.82, 0.85, 0.92, 1.0, 0.90, 0.82, 0.78, 0.95][:months]
-    ingresos = [int(base * f * (1 + random.uniform(-0.05, 0.05))) for f in sf]
-    opex = [int(r * random.uniform(0.22, 0.28)) for r in ingresos]
-    ds = [int(base * 0.35)] * months
-    fcl = [i - o - d for i, o, d in zip(ingresos, opex, ds)]
-    return labels, ingresos, opex, ds, fcl
-
-
-def generate_portfolio_mock():
-    return {
-        "valor_portafolio": 127_500_000_000,
-        "rentabilidad_ytd": 8.7, "roi_proyectado": 12.3,
-        "tir_real": 11.8, "payback_anos": 7.2,
-        "generacion_anual_mwh": 82_400, "factor_planta": 18.5,
-        "co2_evitado_ton": 38_700, "ingresos_ppa_anual": 14_200_000_000,
-        "margen_ebitda": 72.5,
-        "historico_dscr": [1.35, 1.42, 1.38, 1.41, 1.45, 1.39, 1.44, 1.48, 1.42, 1.46, 1.50, 1.47],
-        "riesgo_score": 28,
+def fetch_financial_data_from_sheets(bank_name):
+    """
+    Descarga y extrae los datos reales desde las pestañas de Google Sheets para el banco dado.
+    Utiliza búsqueda dinámica por índices en pandas usando gspread csv exports.
+    Fallback de datos a valores por defecto si no tienen hoja mapeada.
+    """
+    # Mapeo de Google Sheets por Banco
+    # Configuración base con los GIDs correctos de "Insumos FMO"
+    SHEETS_MAP = {
+        "FMO": {
+            "book_id": "1y400zt6ubAEd3Odyb0iZgNL7aut7_RER6DqwgqsmCck",
+            "gids": {
+                "Data": "2047805244",
+                "Assumptions & Results": "1041006504",
+                "Cash Flow annual COP": "114256082",
+                "Debt": "353648052"
+            }
+        }
+        # Podrán agregar más bancos (ej. Davivienda) aquí luego
     }
+    
+    # Valores base (fallback) para evitar que rompa la vista si falla o no hay datos
+    financial_data = {
+        "valor_portafolio": 0, "roi_proyectado": 0.0, "generacion_anual_mwh": 0,
+        "co2_evitado_ton": 38700, # Valor estandar
+        "tir_real": 0.0, "payback_anos": 0.0, 
+        "factor_planta": 18.5, # Valor estandar
+        "margen_ebitda": 0.0,
+        "historico_dscr": [1.0] * 12,
+        "riesgo_score": 28,
+        "cashflow": {
+            "labels": list(MONTH_SHORT.values())[:12], # Defaults as fallback
+            "ingresos": [0] * 12,
+            "opex": [0] * 12,
+            "ds": [0] * 12,
+            "fcl": [0] * 12
+        }
+    }
+    
+    if not HAS_PANDAS or bank_name not in SHEETS_MAP:
+        # Retorna data simulada si no hay pandas o el sheet no está mapeado
+        return financial_data
+        
+    config = SHEETS_MAP[bank_name]
+    base_url = f"https://docs.google.com/spreadsheets/d/{config['book_id']}/export?format=csv&gid="
+    
+    try:
+        # ------- 1. DATA (Valor Portafolio) -------
+        url_data = base_url + config['gids']['Data']
+        df_data = pd.read_csv(url_data)
+        # Buscar 'Portfolio Value' en la primera o segunda columna
+        for i, row in df_data.iterrows():
+            row_str = str(row.values).lower()
+            if 'portfolio value' in row_str:
+                # Normalmente está en la columna B o C (índice 1 o 2) iteraremos para pillar el primero numérico contiguo
+                for val in row.values:
+                    try:
+                        v = str(val).replace(',', '').replace(r'$', '').strip()
+                        if v and v != 'nan' and v.replace('.','',1).isdigit():
+                            financial_data["valor_portafolio"] = float(v)
+                            break
+                    except: pass
+                break
+                
+        # ------- 2. ASSUMPTIONS & RESULTS (TIR, Payback, ROI) -------
+        url_assum = base_url + config['gids']['Assumptions & Results']
+        df_assum = pd.read_csv(url_assum)
+        for i, row in df_assum.iterrows():
+            row_str = str(row.values).lower()
+            if 'results with debt - cop' in row_str or 'irr' in row_str:
+                for val in row.values:
+                    if isinstance(val, str) and '%' in val:
+                        financial_data["tir_real"] = float(val.replace('%','').strip())
+                        financial_data["roi_proyectado"] = financial_data["tir_real"] # Approximation based on IRR
+                        break
+            if 'payback' in row_str:
+                for val in row.values:
+                    try:
+                        v = str(val)
+                        if v != 'nan' and (v.replace('.','',1).isdigit()):
+                            financial_data["payback_anos"] = float(v)
+                            break
+                    except: pass
+                    
+        # ------- 3. CASH FLOW ANNUAL COP (Ingresos, Opex, Margen, Service Debt) -------
+        url_cf = base_url + config['gids']['Cash Flow annual COP']
+        df_cf = pd.read_csv(url_cf)
+        
+        # Extracción de la evolución a lo largo del plazo
+        years_cols = [] # Para almacenar las columnas de años a graficar
+        cf_gen, cf_rev, cf_opex, cf_prin, cf_int, cf_marg = [], [], [], [], [], []
+        
+        # En la hoja CF, usualmente la primera columna es de Etiquetas, la 2da o 3ra empiezan los periodos (números)
+        for i, row in df_cf.iterrows():
+            row_vals = [str(x) for x in row.values]
+            row_str = " ".join(row_vals).lower()
+            
+            # Buscar métricas exactas
+            if 'generation (kwh)' in row_str and not cf_gen:
+                cf_gen = [float(v.replace(',', '')) for v in row_vals if v.replace(',','').replace('.','',1).isdigit()]
+                
+            elif 'total revenues' in row_str and not cf_rev:
+                cf_rev = [float(v.replace(',', '')) for v in row_vals if v.replace(',','').replace('.','',1).isdigit()]
+                
+            elif 'total costs and expenses' in row_str and not cf_opex:
+                cf_opex = [float(v.replace(',', '')) for v in row_vals if v.replace(',','').replace('.','',1).isdigit()]
+                
+            elif 'principal payments' in row_str and not cf_prin:
+                cf_prin = [float(v.replace(',', '')) for v in row_vals if v.replace(',','').replace('.','',1).isdigit()]
+                
+            elif 'interest' in row_str and 'income' not in row_str and not cf_int:
+                cf_int = [float(v.replace(',', '')) for v in row_vals if v.replace(',','').replace('.','',1).isdigit()]
+                
+            elif ('ebitda margin' in row_str or 'margen ebitda' in row_str) and not cf_marg:
+                for v in row_vals:
+                    if '%' in v:
+                        cf_marg.append(float(v.replace('%','').strip()))
+                        
+        # Procesar los arrays extraídos
+        if cf_gen: 
+            financial_data["generacion_anual_mwh"] = sum(cf_gen) / 1000  # kWh a MWh aproximado sumado total, adaptamos abajo al promedio
+            if len(cf_gen) > 0: financial_data["generacion_anual_mwh"] = (sum(cf_gen) / len(cf_gen)) / 1000 
+            
+        if cf_marg:
+            financial_data["margen_ebitda"] = sum(cf_marg) / len(cf_marg)
+            
+        # Preparar data para el gráfico de Cash Flow Consolidated de hasta 15 años
+        chart_len = min(len(cf_rev), len(cf_opex), 15)
+        if chart_len > 0:
+            labels = [f"Año {j+1}" for j in range(chart_len)]
+            rev_c = cf_rev[:chart_len]
+            opex_c = cf_opex[:chart_len]
+            
+            # Servicio deuda es interes + principal
+            ds_c = [0] * chart_len
+            for j in range(chart_len):
+                p = cf_prin[j] if j < len(cf_prin) else 0
+                i_ = cf_int[j] if j < len(cf_int) else 0
+                ds_c[j] = p + i_
+                
+            fcl_c = [rev_c[j] - opex_c[j] - ds_c[j] for j in range(chart_len)]
+            
+            financial_data["cashflow"] = {
+                "labels": labels, "ingresos": rev_c, "opex": opex_c, 
+                "ds": ds_c, "fcl": fcl_c
+            }
+            
+        # ------- 4. DEBT (DSCR) -------
+        url_debt = base_url + config['gids']['Debt']
+        df_debt = pd.read_csv(url_debt)
+        cf_dscr = []
+        for i, row in df_debt.iterrows():
+            row_vals = [str(x) for x in row.values]
+            row_str = " ".join(row_vals).lower()
+            # Buscar el ratio de Cobertura
+            if 'dscr' in row_str and 'calculated' not in row_str:
+                cf_dscr = [float(v) for v in row_vals if v.replace('.','',1).isdigit()]
+                break
+                
+        if cf_dscr:
+            financial_data["historico_dscr"] = cf_dscr[:len(financial_data["cashflow"]["labels"])]
+            
+    except Exception as e:
+        print(f"Error parseando Sheet de {bank_name}: {e}")
+        pass
+        
+    return financial_data
+
 
 
 # Pre-load logos
@@ -1801,10 +1952,9 @@ elif page == "Financiero":
     """, unsafe_allow_html=True)
 
     # Pre-compute consolidated mock data once (shared across tabs)
-    mock = generate_portfolio_mock()
-    total_mw = sum(b.get("proyecto", {}).get("capacidad_agregada_mw", 6) for b in banks)
-    mo_labels, ingresos, opex, ds, fcl = generate_cashflow_mock(total_mw)
-    months_lbl = list(MONTH_SHORT.values())
+    # mock = generate_portfolio_mock() # REMOVED: Now fetching individually per tab
+    # total_mw = sum(b.get("proyecto", {}).get("capacidad_agregada_mw", 6) for b in banks)
+    # mo_labels, ingresos, opex, ds, fcl = generate_cashflow_mock(total_mw)
 
     # ── Bank tabs at the TOP ──────────────────────────────────────────────
     bank_names = [b["name"] for b in banks]
@@ -1813,6 +1963,14 @@ elif page == "Financiero":
     for bank_idx, tab in enumerate(fin_tabs):
         with tab:
             c = contracts[bank_idx]
+            bank_name = bank_names[bank_idx]
+            fin = c.get("condiciones_financieras", {})
+            criticas_data = c.get("clausulas_criticas", {})
+            
+            # Fetch dynamic data from google sheets
+            with st.spinner(f"Cargando datos financieros para {bank_name} desde Google Sheets..."):
+                real_data = fetch_financial_data_from_sheets(bank_name)
+            c = contracts[bank_idx]
             fin = c.get("condiciones_financieras", {})
             criticas_data = c.get("clausulas_criticas", {})
 
@@ -1820,34 +1978,39 @@ elif page == "Financiero":
             st.markdown('<div class="section-title">Portafolio de Inversión</div>', unsafe_allow_html=True)
             pk1, pk2, pk3, pk4 = st.columns(4)
             with pk1:
-                st.markdown(f'<div class="metric-card"><div class="label">Valor Portafolio</div><div class="value">COP {mock["valor_portafolio"]/1e9:.1f}B</div><div class="sub">Total bajo gestión</div></div>', unsafe_allow_html=True)
+                val = real_data["valor_portafolio"]
+                # Formateo a Billones/Millones
+                val_str = f"COP {val/1e9:.1f}B" if val >= 1e9 else f"COP {val:,.0f}"
+                st.markdown(f'<div class="metric-card"><div class="label">Valor Portafolio</div><div class="value">{val_str}</div><div class="sub">Total bajo gestión</div></div>', unsafe_allow_html=True)
             with pk2:
-                st.markdown(f'<div class="metric-card"><div class="label">ROI Proyectado</div><div class="value">{mock["roi_proyectado"]}%</div><div class="sub">Retorno esperado</div></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="metric-card"><div class="label">ROI Proyectado</div><div class="value">{real_data["roi_proyectado"]:.1f}%</div><div class="sub">Retorno esperado</div></div>', unsafe_allow_html=True)
             with pk3:
-                st.markdown(f'<div class="metric-card"><div class="label">Generación Anual</div><div class="value">{mock["generacion_anual_mwh"]:,.0f}</div><div class="sub">MWh / año</div></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="metric-card"><div class="label">Generación Anual</div><div class="value">{real_data["generacion_anual_mwh"]:,.0f}</div><div class="sub">MWh / año</div></div>', unsafe_allow_html=True)
             with pk4:
-                st.markdown(f'<div class="metric-card"><div class="label">CO₂ Evitado</div><div class="value">{mock["co2_evitado_ton"]:,.0f}</div><div class="sub">Toneladas / año</div></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="metric-card"><div class="label">CO₂ Evitado</div><div class="value">{real_data["co2_evitado_ton"]:,.0f}</div><div class="sub">Toneladas / año</div></div>', unsafe_allow_html=True)
 
             # ── 2. Rendimiento Financiero ─────────────────────────────────
             st.markdown('<div class="section-title">Rendimiento Financiero</div>', unsafe_allow_html=True)
             pf1, pf2, pf3, pf4 = st.columns(4)
             with pf1:
-                st.markdown(f'<div class="metric-card"><div class="label">TIR Real</div><div class="value">{mock["tir_real"]}%</div><div class="sub">Tasa interna retorno</div></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="metric-card"><div class="label">TIR Real</div><div class="value">{real_data["tir_real"]:.1f}%</div><div class="sub">Tasa interna retorno</div></div>', unsafe_allow_html=True)
             with pf2:
-                st.markdown(f'<div class="metric-card"><div class="label">Payback</div><div class="value">{mock["payback_anos"]}</div><div class="sub">Años recuperación</div></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="metric-card"><div class="label">Payback</div><div class="value">{real_data["payback_anos"]:.1f}</div><div class="sub">Años recuperación</div></div>', unsafe_allow_html=True)
             with pf3:
-                st.markdown(f'<div class="metric-card"><div class="label">Factor Planta</div><div class="value">{mock["factor_planta"]}%</div><div class="sub">Promedio portafolio</div></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="metric-card"><div class="label">Factor Planta</div><div class="value">{real_data["factor_planta"]:.1f}%</div><div class="sub">Promedio portafolio</div></div>', unsafe_allow_html=True)
             with pf4:
-                st.markdown(f'<div class="metric-card"><div class="label">Margen EBITDA</div><div class="value">{mock["margen_ebitda"]}%</div><div class="sub">Eficiencia operativa</div></div>', unsafe_allow_html=True)
+                st.markdown(f'<div class="metric-card"><div class="label">Margen EBITDA</div><div class="value">{real_data["margen_ebitda"]:.1f}%</div><div class="sub">Eficiencia operativa</div></div>', unsafe_allow_html=True)
 
             # ── 3. Flujo de Caja Consolidado ──────────────────────────────
             st.markdown('<div class="section-title">Flujo de Caja Consolidado</div>', unsafe_allow_html=True)
             if HAS_PLOTLY:
+                cf_data = real_data["cashflow"]
+                cf_labels = cf_data["labels"]
                 fig_cf = go.Figure()
-                fig_cf.add_trace(go.Bar(x=mo_labels, y=[v/1e6 for v in ingresos], name="Ingresos PPA", marker_color=PURPLE))
-                fig_cf.add_trace(go.Bar(x=mo_labels, y=[-v/1e6 for v in opex], name="OPEX", marker_color="#ef4444"))
-                fig_cf.add_trace(go.Bar(x=mo_labels, y=[-v/1e6 for v in ds], name="Servicio Deuda", marker_color="#f59e0b"))
-                fig_cf.add_trace(go.Scatter(x=mo_labels, y=[v/1e6 for v in fcl], name="FCL", line=dict(color=SOLAR_YELLOW, width=3), mode="lines+markers"))
+                fig_cf.add_trace(go.Bar(x=cf_labels, y=[v/1e6 for v in cf_data["ingresos"]], name="Ingresos PPA", marker_color=PURPLE))
+                fig_cf.add_trace(go.Bar(x=cf_labels, y=[-v/1e6 for v in cf_data["opex"]], name="OPEX", marker_color="#ef4444"))
+                fig_cf.add_trace(go.Bar(x=cf_labels, y=[-v/1e6 for v in cf_data["ds"]], name="Servicio Deuda", marker_color="#f59e0b"))
+                fig_cf.add_trace(go.Scatter(x=cf_labels, y=[v/1e6 for v in cf_data["fcl"]], name="FCL", line=dict(color=SOLAR_YELLOW, width=3), mode="lines+markers"))
                 fig_cf.update_layout(
                     barmode="relative", plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
                     font=dict(family="Lato, sans-serif", size=11, color=DEEP_PURPLE),
@@ -1884,9 +2047,12 @@ elif page == "Financiero":
             # ── 5. Histórico DSCR ─────────────────────────────────────────
             st.markdown('<div class="section-title">Histórico DSCR</div>', unsafe_allow_html=True)
             if HAS_PLOTLY:
+                dscr_real = real_data["historico_dscr"]
+                dscr_labels = cf_data["labels"][:len(dscr_real)] # Ajustar labels al tamaño de dscr
+                
                 fig_dscr = go.Figure()
                 fig_dscr.add_trace(go.Scatter(
-                    x=months_lbl, y=mock["historico_dscr"], name="DSCR Real",
+                    x=dscr_labels, y=dscr_real, name="DSCR Real",
                     line=dict(color=PURPLE, width=3), mode="lines+markers",
                     marker=dict(size=8, color=PURPLE, line=dict(width=2, color="#fff")),
                     fill="tozeroy", fillcolor="rgba(145,91,216,0.08)",
