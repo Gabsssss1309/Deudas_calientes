@@ -1574,15 +1574,13 @@ if page == "Vista General":
                 box_left, box_right = st.columns([3, 2], gap="medium")
 
                 with box_left:
-                    # Tabla de proyectos
+                    # Tabla de proyectos (sin Factor Planta)
                     rows_html = ''.join([
-                        f'<tr>'
-                        f'<td style="padding:0.45rem 0.7rem;font-weight:600;color:#2C2039;">{proj["name"]}</td>'
-                        f'<td style="padding:0.45rem 0.7rem;text-align:center;">{proj["cap_kw"]} kWp</td>'
-                        f'<td style="padding:0.45rem 0.7rem;text-align:center;font-weight:700;color:#915BD8;">'
+                        f'<tr style="border-bottom:1px solid rgba(145,91,216,0.12);">'
+                        f'<td style="padding:0.45rem 0.8rem;font-weight:600;color:#2C2039;">{proj["name"]}</td>'
+                        f'<td style="padding:0.45rem 0.8rem;text-align:center;color:#2C2039;font-weight:500;">{proj["cap_kw"]:,} kWp</td>'
+                        f'<td style="padding:0.45rem 0.8rem;text-align:center;font-weight:700;color:#915BD8;">'
                         f'{(sum((bank_proj_data.get(proj["name"],{}) or {}).get("energy_kwh",[]))/1000):,.2f} MWh</td>'
-                        f'<td style="padding:0.45rem 0.7rem;text-align:center;">'
-                        f'{min(100,(sum((bank_proj_data.get(proj["name"],{}) or {}).get("energy_kwh",[]))/1000*1000/(proj["cap_kw"]*24*(30 if vg_scale_val=="month" else 1))*100) if proj["cap_kw"] else 0):.1f}%</td>'
                         f'</tr>'
                         for proj in bank_projects_vg
                     ])
@@ -1590,10 +1588,9 @@ if page == "Vista General":
                         '<div style="border:1.5px solid #915BD8;border-radius:12px;overflow:hidden;">'
                         '<table style="width:100%;border-collapse:collapse;font-size:0.8rem;">'
                         '<thead><tr style="background:#2C2039;color:#FDFAF7;">'
-                        '<th style="padding:0.5rem 0.7rem;text-align:left;font-weight:700;">Proyecto</th>'
-                        '<th style="padding:0.5rem 0.7rem;text-align:center;font-weight:700;">Potencia</th>'
-                        '<th style="padding:0.5rem 0.7rem;text-align:center;font-weight:700;">Generación Anual</th>'
-                        '<th style="padding:0.5rem 0.7rem;text-align:center;font-weight:700;">Factor Planta</th>'
+                        '<th style="padding:0.5rem 0.8rem;text-align:left;font-weight:700;">Proyecto</th>'
+                        '<th style="padding:0.5rem 0.8rem;text-align:center;font-weight:700;">Potencia</th>'
+                        '<th style="padding:0.5rem 0.8rem;text-align:center;font-weight:700;">Generación Anual</th>'
                         '</tr></thead>'
                         f'<tbody>{rows_html}</tbody>'
                         '</table></div>',
@@ -1603,19 +1600,19 @@ if page == "Vista General":
                 with box_right:
                     total_projects = sum(len(v) for v in SOLARVIEW_PROJECTS.values())
                     consolidado_items = [
-                        ("🏦", "Tranche actual",         len(SOLARVIEW_PROJECTS)),
-                        ("⚡", "Proyectos operativos",   total_projects),
-                        ("🏗️", "Proyectos construcción", 3),
-                        ("🚀", "Proyectos despliegue",   5),
+                        ("Tranche actual",         len(SOLARVIEW_PROJECTS)),
+                        ("Proyectos operativos",   total_projects),
+                        ("Proyectos construcción", 3),
+                        ("Proyectos despliegue",   5),
                     ]
                     items_html = ''.join([
                         f'<div style="display:flex;align-items:center;justify-content:space-between;'
                         f'padding:0.5rem 0.8rem;border-bottom:1px solid rgba(145,91,216,0.15);">'
-                        f'<div style="font-size:0.8rem;color:#2C2039;font-weight:600;">{icon} {label}</div>'
+                        f'<div style="font-size:0.8rem;color:#2C2039;font-weight:600;">{label}</div>'
                         f'<div style="font-family:Poppins,sans-serif;font-size:1.1rem;font-weight:800;'
                         f'color:#915BD8;min-width:2rem;text-align:right;">{val}</div>'
                         f'</div>'
-                        for icon, label, val in consolidado_items
+                        for label, val in consolidado_items
                     ])
                     st.markdown(
                         '<div style="border:1.5px solid #915BD8;border-radius:12px;overflow:hidden;height:100%;">'
