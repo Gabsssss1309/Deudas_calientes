@@ -1068,6 +1068,8 @@ div[data-testid="stPills"] button[aria-pressed="true"] {
 /* ── Area filter radio (main content, pill look) ─── */
 [data-testid="stMain"] [data-testid="stRadio"] label {
     display: block;
+    width: 8rem !important;
+    text-align: center !important;
     padding: 0.42rem 0.9rem;
     border-radius: 20px;
     border: 1.5px solid var(--u-purple-25);
