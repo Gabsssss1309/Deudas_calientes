@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --unergy-purple: #915BD8;
+  --unergy-deep-purple: #2C2039;
+  --unergy-cream: #FDFAF7;
+  --unergy-solar-yellow: #F6FF72;
+
+  --background: var(--unergy-deep-purple);
+  --foreground: var(--unergy-cream);
+
+  --card-bg: var(--unergy-cream);
+  --card-border: rgba(145, 91, 216, 0.15);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-unergy-purple text-unergy-cream font-bold rounded-button
+           px-6 py-3 transition-colors hover:opacity-90 cursor-pointer;
+  }
+
+  .btn-secondary {
+    @apply border border-unergy-purple text-unergy-purple font-bold rounded-button
+           px-6 py-3 transition-colors hover:bg-unergy-purple hover:text-unergy-cream cursor-pointer;
+  }
+
+  .card-unergy {
+    @apply bg-unergy-cream rounded-card p-6;
+    border: 1px solid var(--card-border);
+  }
+}
