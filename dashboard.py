@@ -1992,11 +1992,11 @@ elif page == "Financiero":
                 fig_cf.add_trace(go.Scatter(x=cf_labels, y=[v/1e6 for v in cf_data["fcl"]], name="FCL", line=dict(color=SOLAR_YELLOW, width=3), mode="lines+markers"))
                 fig_cf.update_layout(
                     barmode="relative", plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
-                    font=dict(family="Lato, sans-serif", size=11, color=DEEP_PURPLE),
+                    font=dict(family="Lato, sans-serif", size=11, color="#000000"),
                     margin=dict(l=50, r=20, t=20, b=40), height=350,
-                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0, font=dict(size=10)),
-                    yaxis=dict(gridcolor="rgba(145,91,216,0.07)", zeroline=True, zerolinecolor="rgba(44,32,57,0.2)", title="COP Millones"),
-                    xaxis=dict(showgrid=False),
+                    legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0, font=dict(size=10, color="#000000")),
+                    yaxis=dict(gridcolor="rgba(145,91,216,0.07)", zeroline=True, zerolinecolor="rgba(44,32,57,0.2)", title="COP Millones", title_font=dict(color="#000000"), tickfont=dict(color="#000000")),
+                    xaxis=dict(showgrid=False, tickfont=dict(color="#000000")),
                 )
                 st.plotly_chart(fig_cf, use_container_width=True, config={"displayModeBar": False},
                                 key=f"cf_{bank_idx}")
@@ -2040,10 +2040,10 @@ elif page == "Financiero":
                                    annotation_text="Mínimo: 1.20x", annotation_position="top left")
                 fig_dscr.update_layout(
                     plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
-                    font=dict(family="Lato, sans-serif", size=12, color=DEEP_PURPLE),
+                    font=dict(family="Lato, sans-serif", size=12, color="#000000"),
                     margin=dict(l=50, r=20, t=20, b=40), height=300,
-                    yaxis=dict(gridcolor="rgba(145,91,216,0.07)", zeroline=False, range=[0.9, 1.7]),
-                    xaxis=dict(showgrid=False),
+                    yaxis=dict(gridcolor="rgba(145,91,216,0.07)", zeroline=False, range=[0.9, 1.7], tickfont=dict(color="#000000")),
+                    xaxis=dict(showgrid=False, tickfont=dict(color="#000000")),
                 )
                 st.plotly_chart(fig_dscr, use_container_width=True, config={"displayModeBar": False},
                                 key=f"dscr_{bank_idx}")
