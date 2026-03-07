@@ -378,15 +378,97 @@ def _freq_to_months(freq_str: str):
     return None
 
 
+# Keywords that unambiguously mark a periodic (calendar-based) obligation
+_PERIODIC_KW = [
+    "mensual", "bimestral", "trimestral", "cuatrimestral",
+    "semestral", "anual", "annual", "quarterly", "monthly",
+]
+
+# Trigger phrases that indicate the deadline starts AFTER an event occurs
+_CONDITIONAL_TRIGGER_PATTERNS = [
+    # English
+    r'\bupon\s+(?:becoming\s+aware|occurrence|receipt|notification|notice|request|demand|default|delivery)\b',
+    r'\bfollowing\s+(?:any\s+such|receipt|notification|notice|the\s+occurrence|such)\b',
+    r'\bafter\s+(?:the\s+)?(?:occurrence|receipt|notification|notice|becoming\s+aware|such)\b',
+    r'\bas\s+soon\s+as\s+(?:reasonably\s+)?practicable\b',
+    r'\bpromptly\s+(?:upon|after|following)\b',
+    r'\bwithin\s+\d+\s+(?:business\s+days?|calendar\s+days?|days?)\s+(?:of|after|upon|following)\b',
+    r'\bupon\s+the\s+occurrence\b',
+    # Spanish
+    r'\bdentro\s+de\s+\d+\s+días?\s*(?:hábiles?|laborales?|calendario|naturales?)?\s*(?:de|desde|a\s+partir|contados|luego|tras|después)',
+    r'\ben\s+un\s+plazo\s+de\s+\d+',
+    r'\buna\s+vez\s+que\b',
+    r'\buna\s+vez\s+(?:ocurrido|presentado|recibido|notificado|informado)\b',
+    r'\bal\s+momento\s+de\s+(?:conocer|recibir|tener\s+conocimiento)\b',
+    r'\bcuando\s+(?:ocurra|se\s+produzca|se\s+presente|tenga\s+conocimiento)\b',
+    r'\btras\s+(?:la\s+)?(?:ocurrencia|notificación|recepción|conocimiento)\b',
+    r'\ba\s+partir\s+de\s+(?:la\s+)?(?:ocurrencia|notificación|recepción|fecha\s+en\s+que)\b',
+    r'\bcontados?\s+(?:a\s+partir\s+de|desde)\s+(?:la\s+)?(?:fecha\s+en\s+que|ocurrencia|recepción|notificación)\b',
+]
+
+
+def _detect_conditional(item) -> str | None:
+    """
+    Returns a human-readable label if the obligation is event-triggered
+    (deadline starts counting AFTER a condition occurs), e.g.:
+      '5 días hábiles tras condición'
+      'Plazo sujeto a condición'
+    Returns None if it's a regular periodic obligation.
+    """
+    text = " ".join([
+        item.get("obligacion", ""),
+        item.get("frecuencia", ""),
+    ]).lower()
+
+    # 1. If it has a clear periodic frequency, treat as periodic (not conditional)
+    if any(kw in text for kw in _PERIODIC_KW):
+        return None
+
+    # 2. Check for conditional trigger phrases
+    has_trigger = any(re.search(pat, text) for pat in _CONDITIONAL_TRIGGER_PATTERNS)
+    if not has_trigger:
+        return None
+
+    # 3. Extract the stated timeframe
+    # "five (5) Business Days", "5 días hábiles", "3 Business Days", etc.
+    m = re.search(
+        r'(\d+)\s*(?:\(\d+\))?\s*(?:business\s+days?|b\.?d\.?|días?\s+hábiles?|días?\s+laborales?|días?\s+útiles?)',
+        text, re.IGNORECASE,
+    )
+    if m:
+        return f"{m.group(1)} días hábiles tras condición"
+
+    m = re.search(
+        r'(\d+)\s*(?:\(\d+\))?\s*(?:calendar\s+days?|días?\s+calendario|días?\s+naturales?)',
+        text, re.IGNORECASE,
+    )
+    if m:
+        return f"{m.group(1)} días calendario tras condición"
+
+    # Generic "N days"
+    m = re.search(r'(\d+)\s*(?:\(\d+\))?\s*días?', text)
+    if m:
+        return f"{m.group(1)} días tras condición"
+
+    return "Plazo sujeto a condición"
+
+
 def compute_next_due_date(contract, item) -> str:
-    """Return the next exact due date as a short string (e.g. '15 Jul 2026').
+    """Return the next exact due date as a short string (e.g. '15 Jul 2026'),
+    OR a conditional label like '5 días hábiles tras condición' when the
+    deadline is triggered by an external event rather than a calendar period.
 
     Priority:
-    1. Explicit day+month mentioned in the obligation text, frecuencia, or
-       the contract's frecuencia_de_pago_intereses.
-    2. Calendar-month arithmetic from the contract signing date (27 oct 2025).
-    3. Day-based arithmetic for weekly / fortnightly / event-driven items.
+    0. Conditional-trigger detection → return descriptive label, not a date.
+    1. Explicit day+month mentioned in the item's own texts.
+    2. Calendar-month arithmetic from the contract signing date.
+    3. Day-based arithmetic for weekly / fortnightly items.
     """
+    # 0. Detect event-triggered obligations (deadline starts after a condition)
+    conditional_label = _detect_conditional(item)
+    if conditional_label:
+        return conditional_label
+
     today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     month_names = "|".join(SPANISH_MONTHS.keys())
     pattern = rf'(\d{{1,2}})\s+(?:de\s+)?({month_names})'
@@ -456,6 +538,10 @@ def build_calendar_data(contract, bank_idx):
 
     for cat_key, items in resp.items():
         for item in items:
+            # Skip obligations whose deadline is event-triggered (no fixed date)
+            if _detect_conditional(item) is not None:
+                continue
+
             freq  = item.get("frecuencia", "mensual")
             sev   = item.get("severidad", "media")
             color = risk_to_calendar_color(sev)
