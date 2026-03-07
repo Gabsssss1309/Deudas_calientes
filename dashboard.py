@@ -35,7 +35,7 @@ except ImportError:
 # Page config
 # ══════════════════════════════════════════════════════════════════════════════
 st.set_page_config(
-    page_title="Unergy · Debt Tracker",
+    page_title="Unergy · Deudas Calientes",
     page_icon=None,
     layout="wide",
     initial_sidebar_state="expanded",
@@ -1362,7 +1362,7 @@ with st.sidebar:
         </div>
         """, unsafe_allow_html=True)
 
-    st.markdown('<div style="text-align:center; font-size:0.6rem; color:rgba(253,250,247,0.4); font-weight:500; padding-bottom:0.4rem; letter-spacing:0.05em;">DEBT TRACKER</div>', unsafe_allow_html=True)
+    st.markdown('<div style="text-align:center; font-size:0.6rem; color:rgba(253,250,247,0.4); font-weight:500; padding-bottom:0.4rem; letter-spacing:0.05em;">DEUDAS CALIENTES</div>', unsafe_allow_html=True)
     st.divider()
 
     page = st.radio("Nav", ["Vista General", "Obligaciones", "Financiero"], label_visibility="collapsed")
@@ -1394,7 +1394,7 @@ if page == "Vista General":
     <div class="vg-header">
         <div class="vg-logo-title">
             {logo_src}
-            <span class="tracker-label">Debt Tracker</span>
+            <span class="tracker-label">Deudas Calientes</span>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -2079,7 +2079,7 @@ elif page == "Financiero":
 # ══════════════════════════════════════════════════════════════════════════════
 st.markdown(f"""
 <div class="footer">
-    Unergy · Debt Tracker · {len(banks)} contrato(s) bajo gestión<br>
+    Unergy · Deudas Calientes · {len(banks)} contrato(s) bajo gestión<br>
     Solo para fines informativos internos. No constituye asesoría legal.
 </div>
 """, unsafe_allow_html=True)
