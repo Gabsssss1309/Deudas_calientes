@@ -673,10 +673,10 @@ def fetch_financial_data_from_sheets(bank_name):
         "FMO": {
             "book_id": "1y400zt6ubAEd3Odyb0iZgNL7aut7_RER6DqwgqsmCck",
             "gids": {
-                "Data": "2047805244",
-                "Assumptions & Results": "1041006504",
-                "Cash Flow annual COP": "114256082",
-                "Debt": "353648052"
+                "Data": "114256082",
+                "Assumptions & Results": "581135243",
+                "Cash Flow annual COP": "1097262070",
+                "Debt": "1116172671"
             }
         }
         # Podrán agregar más bancos (ej. Davivienda) aquí luego
