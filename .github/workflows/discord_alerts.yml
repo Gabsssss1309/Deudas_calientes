@@ -2,7 +2,7 @@ name: Unergy — Discord Obligation Alerts
 
 on:
   schedule:
-    - cron: "57 2 * * *"
+    - cron: "59 2 * * *"
   workflow_dispatch:
     inputs:
       test_mode:
