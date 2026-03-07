@@ -2023,8 +2023,8 @@ elif page == "Financiero":
             else:
                 st.info("No se encontraron covenants financieros en este contrato.")
 
-            # ── 5. Histórico DSCR ─────────────────────────────────────────
-            st.markdown('<div class="section-title">Histórico DSCR</div>', unsafe_allow_html=True)
+            # ── 5. DSCR Proyectado ────────────────────────────────────────
+            st.markdown('<div class="section-title">DSCR Proyectado</div>', unsafe_allow_html=True)
             if HAS_PLOTLY:
                 dscr_real = real_data["historico_dscr"]
                 dscr_labels = cf_data["labels"][:len(dscr_real)] # Ajustar labels al tamaño de dscr
