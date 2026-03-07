@@ -72,6 +72,7 @@ class Obligacion(Base):
         default="pendiente",
     )
     notas = Column(Text)
+    periodo_dias = Column(Integer, nullable=True)  # Period length (days) for 3-alert equidistant split
     creado_en = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
     actualizado_en = Column(DateTime(timezone=True), nullable=False, default=datetime.utcnow)
 

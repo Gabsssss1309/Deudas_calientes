@@ -8,19 +8,30 @@ from datetime import date
 
 from models import Obligacion, MapeoResponsable
 
-# Color map by urgency level
+# ── Legacy threshold colours (kept for backwards compatibility) ───────────────
 COLORS = {
-    90: 0x3498DB,   # Blue — informativo
-    30: 0xF1C40F,   # Yellow — advertencia
-    15: 0xE67E22,   # Orange — urgente
-    3:  0xE74C3C,   # Red — crítico
+    90: 0x3498DB,
+    30: 0xF1C40F,
+    15: 0xE67E22,
+    3:  0xE74C3C,
 }
-
 URGENCY_LABELS = {
     90: "📋 Recordatorio",
     30: "⚠️ Atención",
     15: "🔶 Urgente",
     3:  "🔴 Crítico",
+}
+
+# ── 3-period equidistant colours — Unergy brand palette ──────────────────────
+PERIOD_COLORS = {
+    1: 0x2C2039,   # Púrpura Profundo  — primera alerta (temprana)
+    2: 0x915BD8,   # Púrpura Enérgico  — segunda alerta (recordatorio)
+    3: 0xF6FF72,   # Amarillo Solar    — vencimiento (atención máxima)
+}
+PERIOD_LABELS = {
+    1: "🔔  Primera alerta — 1/3 del período",
+    2: "⚠️  Segunda alerta — 2/3 del período",
+    3: "🚨  Vencimiento hoy",
 }
 
 
@@ -137,5 +148,72 @@ async def send_alert(
 
     return await channel.send(
         content=f"🔔 {mention} — Obligación próxima a vencer:",
+        embed=embed,
+    )
+
+
+# ── 3-period equidistant alert (Unergy brand) ─────────────────────────────────
+
+def build_period_alert_embed(
+    obligacion: Obligacion,
+    dias_restantes: int,
+    alert_num: int,
+    periodo_dias: int,
+    deuda_nombre: str,
+    mapeo: dict[str, MapeoResponsable],
+) -> tuple[discord.Embed, str]:
+    """
+    Build a Discord embed for a 3-period equidistant alert.
+
+    alert_num   — 1 (early warning), 2 (midpoint), 3 (due date)
+    periodo_dias — full period length in days (used to show context)
+    """
+    color   = PERIOD_COLORS.get(alert_num, 0x915BD8)
+    label   = PERIOD_LABELS.get(alert_num, f"Alerta {alert_num}/3")
+    mention = build_mention(obligacion, mapeo)
+
+    # For the due-date alert use yellow text on dark; Discord shows color as sidebar
+    embed = discord.Embed(
+        title=label,
+        color=color,
+    )
+
+    embed.add_field(
+        name="📄 Obligación",
+        value=obligacion.descripcion[:1024],
+        inline=False,
+    )
+    embed.add_field(name="🏗️ Proyecto / Deuda",    value=deuda_nombre,                                     inline=True)
+    embed.add_field(name="📅 Fecha de Vencimiento", value=obligacion.fecha_vencimiento.strftime("%d/%m/%Y"), inline=True)
+    embed.add_field(name="⏳ Días Restantes",        value=str(max(0, dias_restantes)),                      inline=True)
+    embed.add_field(name="🏢 Área",                  value=obligacion.area.capitalize(),                     inline=True)
+    embed.add_field(name="👤 Responsable",            value=mention,                                          inline=True)
+    embed.add_field(name="🔁 Período",               value=f"{periodo_dias} días",                           inline=True)
+
+    if obligacion.notas:
+        embed.add_field(name="📝 Notas", value=obligacion.notas[:1024], inline=False)
+
+    embed.set_footer(text=f"Unergy Debt Tracker · Alerta {alert_num}/3 | ID: {str(obligacion.id)[:8]}")
+
+    return embed, mention
+
+
+async def send_period_alert(
+    channel: discord.TextChannel,
+    obligacion: Obligacion,
+    dias_restantes: int,
+    alert_num: int,
+    periodo_dias: int,
+    deuda_nombre: str,
+    mapeo: dict[str, MapeoResponsable],
+) -> discord.Message:
+    """Send a 3-period equidistant compliance alert to a Discord channel."""
+    embed, mention = build_period_alert_embed(
+        obligacion, dias_restantes, alert_num, periodo_dias, deuda_nombre, mapeo,
+    )
+    icons = {1: "🔔", 2: "⚠️", 3: "🚨"}
+    icon  = icons.get(alert_num, "🔔")
+    return await channel.send(
+        content=f"{icon} {mention} — Alerta {alert_num}/3 de cumplimiento:",
         embed=embed,
     )
