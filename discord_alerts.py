@@ -277,8 +277,10 @@ def send_embed(embed: dict) -> None:
 
 # ── Main ──────────────────────────────────────────────────────────────────────
 
-def run() -> None:
+def run(test_mode: bool = False) -> None:
     print(f"Unergy Discord Alerts — {TODAY.date()}\n{'─'*50}")
+    if test_mode:
+        print("⚠️  TEST MODE — sending first available obligation regardless of date\n")
 
     contract_files = sorted(DATA_DIR.glob("contract_data*.json"))
     if not contract_files:
@@ -302,6 +304,16 @@ def run() -> None:
                     continue
                 due_date, period_days = result
 
+                # Test mode: send the first obligation we find, using alert 1
+                if test_mode and total_sent == 0:
+                    label = item.get("obligacion", "")[:60]
+                    print(f"  TEST ALERT 1/3 | vence {due_date.date()} | {label}")
+                    embed = build_embed(contract, item, due_date, 1)
+                    embed["title"] = "🧪 [PRUEBA] " + embed["title"]
+                    send_embed(embed)
+                    total_sent += 1
+                    continue
+
                 for alert_date, alert_num in alert_dates(due_date, period_days):
                     if is_alert_day(alert_date):
                         label = item.get("obligacion", "")[:60]
@@ -310,9 +322,13 @@ def run() -> None:
                         send_embed(embed)
                         total_sent += 1
 
+        if test_mode and total_sent > 0:
+            break  # one test message is enough
+
     print(f"\n{'─'*50}")
     print(f"✅  {total_sent} alert(s) dispatched for {TODAY.date()}")
 
 
 if __name__ == "__main__":
-    run()
+    test_mode = "--test" in sys.argv
+    run(test_mode=test_mode)
