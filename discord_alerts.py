@@ -268,7 +268,10 @@ def send_embed(embed: dict) -> None:
     req = urllib.request.Request(
         WEBHOOK_URL,
         data=payload,
-        headers={"Content-Type": "application/json"},
+        headers={
+            "Content-Type": "application/json",
+            "User-Agent": "UneryDebtTracker/1.0 (Discord Webhook Bot)",
+        },
         method="POST",
     )
     try:
