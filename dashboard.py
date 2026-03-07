@@ -663,180 +663,152 @@ def generate_solarview_mock(projects, scale="month"):
 
 def fetch_financial_data_from_sheets(bank_name):
     """
-    Descarga y extrae los datos reales desde las pestañas de Google Sheets para el banco dado.
-    Utiliza búsqueda dinámica por índices en pandas usando gspread csv exports.
-    Fallback de datos a valores por defecto si no tienen hoja mapeada.
+    Lee los datos financieros reales desde los modelos Excel locales usando openpyxl.
+
+    Estructura esperada (ambos archivos):
+      Data C57                       → Valor Portafolio
+      Assumptions & Results H22/H23  → TIR Real / Payback
+      Cash Flow annual COP row3 D+   → etiquetas de año
+        row 4  → Generation (kWh)
+        row 8  → Total Revenues
+        row 41 → Total Costs
+        row 44 (FMO) / 42 (Davivienda) → MARGEN EBITDA
+        row 54 → Principal payments
+        row 56 → Interest
+      Debt row 25 F+                 → DSCR
     """
-    # Mapeo de Google Sheets por Banco
-    # Configuración base con los GIDs correctos de "Insumos FMO"
-    SHEETS_MAP = {
-        "FMO": {
-            "book_id": "1y400zt6ubAEd3Odyb0iZgNL7aut7_RER6DqwgqsmCck",
-            "gids": {
-                "Data": "114256082",
-                "Assumptions & Results": "581135243",
-                "Cash Flow annual COP": "1097262070",
-                "Debt": "1116172671"
-            }
-        }
-        # Podrán agregar más bancos (ej. Davivienda) aquí luego
+    EXCEL_MAP = {
+        "FMO":        "Financial model - Sol de La Sierra FMO.xlsx",
+        "Davivienda": "Financial model - Serranía de Perija 1 Davivienda.xlsx",
     }
-    
-    # Valores base (fallback) para evitar que rompa la vista si falla o no hay datos
+    EBITDA_ROW = {"FMO": 44, "Davivienda": 44}
+
     financial_data = {
         "valor_portafolio": 0, "roi_proyectado": 0.0, "generacion_anual_mwh": 0,
-        "co2_evitado_ton": 38700, # Valor estandar
-        "tir_real": 0.0, "payback_anos": 0.0, 
-        "factor_planta": 18.5, # Valor estandar
+        "co2_evitado_ton": 0,
+        "tir_real": 0.0, "payback_anos": 0.0,
+        "factor_planta": 18.5,
         "margen_ebitda": 0.0,
         "historico_dscr": [1.0] * 12,
         "riesgo_score": 28,
         "cashflow": {
-            "labels": list(MONTH_SHORT.values())[:12], # Defaults as fallback
+            "labels": [f"Año {j+1}" for j in range(12)],
             "ingresos": [0] * 12,
             "opex": [0] * 12,
             "ds": [0] * 12,
-            "fcl": [0] * 12
-        }
+            "fcl": [0] * 12,
+        },
     }
-    
-    if not HAS_PANDAS:
-        st.error("🚨 Error crítico: Pandas no está instalado en este entorno (Streamlit Cloud). Revisar requirements.txt")
+
+    if bank_name not in EXCEL_MAP:
+        st.info(f"ℹ️ El banco '{bank_name}' no tiene un modelo Excel vinculado.")
         return financial_data
-        
-    if bank_name not in SHEETS_MAP:
-        st.info(f"ℹ️ El banco '{bank_name}' no tiene una hoja de Google Sheets vinculada. Mostrando valores por defecto 0.0.")
+
+    excel_path = DATA_DIR / EXCEL_MAP[bank_name]
+    if not excel_path.exists():
+        st.warning(f"⚠️ Archivo no encontrado: {excel_path.name}")
         return financial_data
-        
-    config = SHEETS_MAP[bank_name]
-    base_url = f"https://docs.google.com/spreadsheets/d/{config['book_id']}/export?format=csv&gid="
-    
-    def _get_sheet_df(gid):
-        url = base_url + gid
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
-        }
-        r = http_req.get(url, headers=headers)
-        r.raise_for_status()
-        return pd.read_csv(io.StringIO(r.text))
-    
+
     try:
-        # ------- 1. DATA (Valor Portafolio) -------
-        df_data = _get_sheet_df(config['gids']['Data'])
-        # Buscar 'Portfolio Value' en la primera o segunda columna
-        for i, row in df_data.iterrows():
-            row_str = str(row.values).lower()
-            if 'portfolio value' in row_str:
-                # Normalmente está en la columna B o C (índice 1 o 2) iteraremos para pillar el primero numérico contiguo
-                for val in row.values:
-                    try:
-                        v = str(val).replace(',', '').replace(r'$', '').strip()
-                        if v and v != 'nan' and v.replace('.','',1).isdigit():
-                            financial_data["valor_portafolio"] = float(v)
-                            break
-                    except: pass
+        import openpyxl
+        wb = openpyxl.load_workbook(excel_path, data_only=True)
+
+        # ── 1. Portfolio Value ── Data C57
+        ws_data = wb["Data"]
+        val = ws_data["C57"].value
+        if val is not None:
+            financial_data["valor_portafolio"] = float(val)
+
+        # ── 2. TIR Real & Payback ── Assumptions & Results H22, H23
+        ws_assum = wb["Assumptions & Results"]
+        irr = ws_assum["H22"].value
+        payback = ws_assum["H23"].value
+        if irr is not None:
+            irr_f = float(irr)
+            financial_data["tir_real"] = round(irr_f * 100 if irr_f < 1 else irr_f, 2)
+            financial_data["roi_proyectado"] = financial_data["tir_real"]
+        if payback is not None:
+            financial_data["payback_anos"] = float(payback)
+
+        # ── 3. Cash Flow annual COP ──────────────────────────────────────────
+        ws_cf = wb["Cash Flow annual COP"]
+        ebitda_row = EBITDA_ROW.get(bank_name, 44)
+
+        def _read_cf_row(row_num, start_col=4):
+            vals = []
+            for col in range(start_col, ws_cf.max_column + 1):
+                v = ws_cf.cell(row=row_num, column=col).value
+                if v is None:
+                    break
+                try:
+                    vals.append(float(v))
+                except (TypeError, ValueError):
+                    pass  # skip error cells (e.g. #DIV/0! in construction year)
+            return vals
+
+        # Year labels (row 3)
+        year_labels = []
+        for col in range(4, ws_cf.max_column + 1):
+            v = ws_cf.cell(row=3, column=col).value
+            if v is None:
                 break
-                
-        # ------- 2. ASSUMPTIONS & RESULTS (TIR, Payback, ROI) -------
-        df_assum = _get_sheet_df(config['gids']['Assumptions & Results'])
-        for i, row in df_assum.iterrows():
-            row_str = str(row.values).lower()
-            if 'results with debt - cop' in row_str or 'irr' in row_str:
-                for val in row.values:
-                    if isinstance(val, str) and '%' in val:
-                        financial_data["tir_real"] = float(val.replace('%','').strip())
-                        financial_data["roi_proyectado"] = financial_data["tir_real"] # Approximation based on IRR
-                        break
-            if 'payback' in row_str:
-                for val in row.values:
-                    try:
-                        v = str(val)
-                        if v != 'nan' and (v.replace('.','',1).isdigit()):
-                            financial_data["payback_anos"] = float(v)
-                            break
-                    except: pass
-                    
-        # ------- 3. CASH FLOW ANNUAL COP (Ingresos, Opex, Margen, Service Debt) -------
-        df_cf = _get_sheet_df(config['gids']['Cash Flow annual COP'])
-        
-        # Extracción de la evolución a lo largo del plazo
-        years_cols = [] # Para almacenar las columnas de años a graficar
-        cf_gen, cf_rev, cf_opex, cf_prin, cf_int, cf_marg = [], [], [], [], [], []
-        
-        # En la hoja CF, usualmente la primera columna es de Etiquetas, la 2da o 3ra empiezan los periodos (números)
-        for i, row in df_cf.iterrows():
-            row_vals = [str(x) for x in row.values]
-            row_str = " ".join(row_vals).lower()
-            
-            # Buscar métricas exactas
-            if 'generation (kwh)' in row_str and not cf_gen:
-                cf_gen = [float(v.replace(',', '')) for v in row_vals if v.replace(',','').replace('.','',1).isdigit()]
-                
-            elif 'total revenues' in row_str and not cf_rev:
-                cf_rev = [float(v.replace(',', '')) for v in row_vals if v.replace(',','').replace('.','',1).isdigit()]
-                
-            elif 'total costs and expenses' in row_str and not cf_opex:
-                cf_opex = [float(v.replace(',', '')) for v in row_vals if v.replace(',','').replace('.','',1).isdigit()]
-                
-            elif 'principal payments' in row_str and not cf_prin:
-                cf_prin = [float(v.replace(',', '')) for v in row_vals if v.replace(',','').replace('.','',1).isdigit()]
-                
-            elif 'interest' in row_str and 'income' not in row_str and not cf_int:
-                cf_int = [float(v.replace(',', '')) for v in row_vals if v.replace(',','').replace('.','',1).isdigit()]
-                
-            elif ('ebitda margin' in row_str or 'margen ebitda' in row_str) and not cf_marg:
-                for v in row_vals:
-                    if '%' in v:
-                        cf_marg.append(float(v.replace('%','').strip()))
-                        
-        # Procesar los arrays extraídos
-        if cf_gen: 
-            financial_data["generacion_anual_mwh"] = sum(cf_gen) / 1000  # kWh a MWh aproximado sumado total, adaptamos abajo al promedio
-            if len(cf_gen) > 0: financial_data["generacion_anual_mwh"] = (sum(cf_gen) / len(cf_gen)) / 1000 
-            
-        if cf_marg:
-            financial_data["margen_ebitda"] = sum(cf_marg) / len(cf_marg)
-            
-        # Preparar data para el gráfico de Cash Flow Consolidated de hasta 15 años
+            try:
+                year_labels.append(str(int(float(str(v)))))
+            except (TypeError, ValueError):
+                break
+
+        cf_gen   = _read_cf_row(4)
+        cf_rev   = _read_cf_row(8)
+        cf_opex  = _read_cf_row(41)
+        cf_ebitda= _read_cf_row(ebitda_row)
+        cf_prin  = _read_cf_row(54)
+        cf_int   = _read_cf_row(56)
+
+        if cf_gen:
+            avg_kwh = sum(cf_gen) / len(cf_gen)
+            financial_data["generacion_anual_mwh"] = avg_kwh / 1000
+            financial_data["co2_evitado_ton"] = round(avg_kwh / 1000 * 0.4)
+
+        if cf_ebitda:
+            avg_eb = sum(cf_ebitda) / len(cf_ebitda)
+            financial_data["margen_ebitda"] = round(avg_eb * 100 if avg_eb <= 1.0 else avg_eb, 1)
+
         chart_len = min(len(cf_rev), len(cf_opex), 15)
         if chart_len > 0:
-            labels = [f"Año {j+1}" for j in range(chart_len)]
-            rev_c = cf_rev[:chart_len]
+            labels = [year_labels[j] if j < len(year_labels) else f"Año {j+1}" for j in range(chart_len)]
+            rev_c  = cf_rev[:chart_len]
             opex_c = cf_opex[:chart_len]
-            
-            # Servicio deuda es interes + principal
-            ds_c = [0] * chart_len
-            for j in range(chart_len):
-                p = cf_prin[j] if j < len(cf_prin) else 0
-                i_ = cf_int[j] if j < len(cf_int) else 0
-                ds_c[j] = p + i_
-                
-            fcl_c = [rev_c[j] - opex_c[j] - ds_c[j] for j in range(chart_len)]
-            
+            ds_c   = [
+                (cf_prin[j] if j < len(cf_prin) else 0) + (cf_int[j] if j < len(cf_int) else 0)
+                for j in range(chart_len)
+            ]
+            fcl_c  = [rev_c[j] - opex_c[j] - ds_c[j] for j in range(chart_len)]
             financial_data["cashflow"] = {
-                "labels": labels, "ingresos": rev_c, "opex": opex_c, 
-                "ds": ds_c, "fcl": fcl_c
+                "labels": labels, "ingresos": rev_c, "opex": opex_c,
+                "ds": ds_c, "fcl": fcl_c,
             }
-            
-        # ------- 4. DEBT (DSCR) -------
-        df_debt = _get_sheet_df(config['gids']['Debt'])
-        cf_dscr = []
-        for i, row in df_debt.iterrows():
-            row_vals = [str(x) for x in row.values]
-            row_str = " ".join(row_vals).lower()
-            # Buscar el ratio de Cobertura
-            if 'dscr' in row_str and 'calculated' not in row_str:
-                cf_dscr = [float(v) for v in row_vals if v.replace('.','',1).isdigit()]
+
+        # ── 4. DSCR ── Debt row 25, col F+ (col 6+)
+        ws_debt = wb["Debt"]
+        dscr_vals = []
+        for col in range(6, ws_debt.max_column + 1):
+            v = ws_debt.cell(row=25, column=col).value
+            if v is None:
                 break
-                
-        if cf_dscr:
-            financial_data["historico_dscr"] = cf_dscr[:len(financial_data["cashflow"]["labels"])]
-            
+            try:
+                dscr_vals.append(float(v))
+            except (TypeError, ValueError):
+                break
+
+        if dscr_vals:
+            n = chart_len if chart_len > 0 else len(dscr_vals)
+            financial_data["historico_dscr"] = dscr_vals[:n]
+
     except Exception as e:
         import traceback
-        st.error(f"⚠️ Error procesando Sheet de {bank_name}: {e}")
+        st.error(f"⚠️ Error procesando Excel de {bank_name}: {e}")
         st.expander("Ver detalles técnicos del error (Traceback)").code(traceback.format_exc())
-        
+
     return financial_data
 
 
@@ -1975,7 +1947,7 @@ elif page == "Financiero":
             criticas_data = c.get("clausulas_criticas", {})
             
             # Fetch dynamic data from google sheets
-            with st.spinner(f"Cargando datos financieros para {bank_name} desde Google Sheets..."):
+            with st.spinner(f"Cargando datos financieros para {bank_name}..."):
                 real_data = fetch_financial_data_from_sheets(bank_name)
             c = contracts[bank_idx]
             fin = c.get("condiciones_financieras", {})
