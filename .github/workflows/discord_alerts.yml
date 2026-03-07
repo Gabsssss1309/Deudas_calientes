@@ -2,11 +2,11 @@ name: Unergy — Discord Obligation Alerts
 
 on:
   schedule:
-    - cron: "35 2 * * *"   # 9:21 PM Colombia (UTC-5 → 02:21 UTC)
+    - cron: "41 2 * * *"
   workflow_dispatch:
     inputs:
       test_mode:
-        description: "Enviar alerta de prueba (true/false)"
+        description: "Enviar alerta de prueba (escribir: true)"
         required: false
         default: "false"
 
