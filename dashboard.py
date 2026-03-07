@@ -5,6 +5,7 @@ import random
 import re
 from pathlib import Path
 from datetime import datetime, timedelta
+import io
 
 try:
     import pandas as pd
@@ -710,10 +711,18 @@ def fetch_financial_data_from_sheets(bank_name):
     config = SHEETS_MAP[bank_name]
     base_url = f"https://docs.google.com/spreadsheets/d/{config['book_id']}/export?format=csv&gid="
     
+    def _get_sheet_df(gid):
+        url = base_url + gid
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36"
+        }
+        r = http_req.get(url, headers=headers)
+        r.raise_for_status()
+        return pd.read_csv(io.StringIO(r.text))
+    
     try:
         # ------- 1. DATA (Valor Portafolio) -------
-        url_data = base_url + config['gids']['Data']
-        df_data = pd.read_csv(url_data)
+        df_data = _get_sheet_df(config['gids']['Data'])
         # Buscar 'Portfolio Value' en la primera o segunda columna
         for i, row in df_data.iterrows():
             row_str = str(row.values).lower()
@@ -729,8 +738,7 @@ def fetch_financial_data_from_sheets(bank_name):
                 break
                 
         # ------- 2. ASSUMPTIONS & RESULTS (TIR, Payback, ROI) -------
-        url_assum = base_url + config['gids']['Assumptions & Results']
-        df_assum = pd.read_csv(url_assum)
+        df_assum = _get_sheet_df(config['gids']['Assumptions & Results'])
         for i, row in df_assum.iterrows():
             row_str = str(row.values).lower()
             if 'results with debt - cop' in row_str or 'irr' in row_str:
@@ -749,8 +757,7 @@ def fetch_financial_data_from_sheets(bank_name):
                     except: pass
                     
         # ------- 3. CASH FLOW ANNUAL COP (Ingresos, Opex, Margen, Service Debt) -------
-        url_cf = base_url + config['gids']['Cash Flow annual COP']
-        df_cf = pd.read_csv(url_cf)
+        df_cf = _get_sheet_df(config['gids']['Cash Flow annual COP'])
         
         # Extracción de la evolución a lo largo del plazo
         years_cols = [] # Para almacenar las columnas de años a graficar
@@ -812,8 +819,7 @@ def fetch_financial_data_from_sheets(bank_name):
             }
             
         # ------- 4. DEBT (DSCR) -------
-        url_debt = base_url + config['gids']['Debt']
-        df_debt = pd.read_csv(url_debt)
+        df_debt = _get_sheet_df(config['gids']['Debt'])
         cf_dscr = []
         for i, row in df_debt.iterrows():
             row_vals = [str(x) for x in row.values]
